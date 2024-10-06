@@ -7,6 +7,7 @@ import {
   faBell,
   faGasPump,
 } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 const ActionButton = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -57,9 +58,11 @@ const ActionButton = () => {
         }`}
         style={{ bottom: "4rem" }} // Adjust position slightly above the button
       >
-        <div className="rounded-full p-2 bg-green-300 hover:bg-green-400 text-white">
-          <FontAwesomeIcon className="w-8 h-8" icon={faContactBook} />
-        </div>
+        <Link to={`contact`}>
+          <div className="rounded-full p-2 bg-green-300 hover:bg-green-400 text-white">
+            <FontAwesomeIcon className="w-8 h-8" icon={faContactBook} />
+          </div>
+        </Link>
         <div className="rounded-full p-2 bg-blue-300 hover:bg-blue-400 text-white">
           <FontAwesomeIcon className="w-8 h-8" icon={faReceipt} />
         </div>
