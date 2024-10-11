@@ -6,7 +6,9 @@ import App from "./App";
 import ContactBook from "./components/contactbook";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
-
+import Usersettings from "./components/settings/usersettings";
+import Accept from "./components/acceptance/accept";
+import Invitation from "./components/acceptance/invitation";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -15,6 +17,18 @@ const router = createBrowserRouter([
   {
     path: "/contact",
     element: <ContactBook />,
+  },
+  {
+    path: "/settings",
+    element: <Usersettings />,
+  },
+  {
+    path: "/accept",
+    element: <Accept />,
+  },
+  {
+    path: "/accept/invite",
+    element: <Invitation />,
   },
 ]);
 

@@ -8,8 +8,8 @@ import nonviolence from "../assets/img/nonviolence.svg";
 
 const MainPage = () => {
   return (
-    <div className="body bg-gradient-to-r from-violet-500 to-fuchsia-500">
-      <div className=" h-dvh m-10 w-dvw grid grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 ">
+    <div className="">
+      <div className="m-5 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 ">
         <div className="p-0">
           <Cards
             cardName={"Health"}

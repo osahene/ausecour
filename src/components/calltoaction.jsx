@@ -3,9 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAdd,
   faContactBook,
-  faReceipt,
-  faBell,
-  faGasPump,
+  // faReceipt,
+  // faBell,
+  // faGasPump,
+  // faGear,
+  faUserCog,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
@@ -63,15 +65,17 @@ const ActionButton = () => {
             <FontAwesomeIcon className="w-8 h-8" icon={faContactBook} />
           </div>
         </Link>
-        <div className="rounded-full p-2 bg-blue-300 hover:bg-blue-400 text-white">
-          <FontAwesomeIcon className="w-8 h-8" icon={faReceipt} />
-        </div>
-        <div className="rounded-full p-2 bg-yellow-300 hover:bg-yellow-400 text-white">
+        <Link to={`settings`}>
+          <div className="rounded-full p-2 bg-blue-300 hover:bg-blue-400 text-white">
+            <FontAwesomeIcon className="w-8 h-8" icon={faUserCog} />
+          </div>
+        </Link>
+        {/* <div className="rounded-full p-2 bg-yellow-300 hover:bg-yellow-400 text-white">
           <FontAwesomeIcon className="w-8 h-8" icon={faBell} />
         </div>
         <div className="rounded-full p-2 mb-5 p bg-yellow-300 hover:bg-yellow-400 text-white">
           <FontAwesomeIcon className="w-8 h-8" icon={faGasPump} />
-        </div>
+        </div> */}
       </div>
     </div>
   );
