@@ -9,10 +9,16 @@ import reportWebVitals from "./reportWebVitals";
 import Usersettings from "./components/settings/usersettings";
 import Accept from "./components/acceptance/accept";
 import Invitation from "./components/acceptance/invitation";
+import Login from "./components/auth/login";
+import ErrorPage from "./components/errorpage";
+import Register from "./components/auth/register";
+import OTPpage from "./components/auth/otp";
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "/contact",
@@ -29,6 +35,18 @@ const router = createBrowserRouter([
   {
     path: "/accept/invite",
     element: <Invitation />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/otp",
+    element: <OTPpage />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ]);
 
