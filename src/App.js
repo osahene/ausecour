@@ -3,14 +3,19 @@ import React from "react";
 import MainPage from "./components/home";
 import ActionButton from "./components/calltoaction";
 import "./App.css";
-
+import HeaderBar from "./components/navbar/headerbar";
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <MainPage />
-        <ActionButton />
-      </header>
+    <div>
+      <div>
+        <HeaderBar />
+      </div>
+      <div className="App">
+        <header className="App-header">
+          <MainPage />
+          <ActionButton />
+        </header>
+      </div>
     </div>
   );
 }

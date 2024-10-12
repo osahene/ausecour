@@ -5,10 +5,14 @@ import flood from "../assets/img/flood.svg";
 import fire from "../assets/img/fire.svg";
 import callss from "../assets/img/callss.svg";
 import nonviolence from "../assets/img/nonviolence.svg";
+// import HeaderBar from "./navbar/headerbar";
 
 const MainPage = () => {
   return (
     <div className="">
+      {/* <div>
+        <HeaderBar />
+      </div> */}
       <div className="m-5 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 ">
         <div className="p-0">
           <Cards
