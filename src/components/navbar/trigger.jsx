@@ -31,7 +31,7 @@ export default function TriggerCard({
   return (
     <CSSTransition in={showModal} timeout={300} classNames="fade" unmountOnExit>
       <div className=" modal-backdrop fixed inset-0 z-50 flex justify-center items-center">
-        <div className="relative bg-red-300 p-4 w-full max-w-sm max-h-full rounded-lg shadow">
+        <div className="relative bg-white p-4 w-full max-w-sm max-h-full rounded-lg shadow">
           <button
             type="button"
             className="absolute top-3 right-2.5 text-gray-400"

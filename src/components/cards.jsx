@@ -1,8 +1,8 @@
 const Cards = ({ cardName, cardName2, cardLogo, logoAlt }) => {
   return (
-    <div className="w-auto h-auto grid gap-auto backdrop-filter backdrop-blur-sm bg-opacity-10 overflow-hidden border border-gray-200 rounded-xl shadow ">
-      <div className="p-1 flex flex-col justify-center items-end content-fit">
-        <div className="flex flex-col items-start">
+    <div className="w-auto h-auto grid gap-auto backdrop-filter backdrop-blur-sm bg-opacity-10 bg-slate-200 overflow-hidden border border-gray-200 rounded-xl shadow shadow-xl">
+      <div className="p-1 flex flex-col justify-center items-start content-fit">
+        <div className="ml-3 flex flex-col items-start">
           <p className="font-bold text-[24px] xs:text-[40px] sm:text-[50px]  text-gray-700 dark:text-white">
             {cardName}
           </p>
@@ -11,7 +11,7 @@ const Cards = ({ cardName, cardName2, cardLogo, logoAlt }) => {
           </p>
         </div>
       </div>
-      <div className="relative flex top-[10px] xs:top-[10px] sm:top-[30px] md:top-[50px] xs:z-[2] justify-start">
+      <div className="ml-3 relative flex top-[10px] xs:top-[10px] sm:top-[30px] md:top-[50px] xs:z-[2] justify-start">
         <img
           className="rounded-t-lg h-[70px] xs:h-[100px] sm:h-[150px]"
           src={cardLogo}
