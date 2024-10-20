@@ -30,7 +30,7 @@ export default function Accept() {
                     flip="horizontal"
                     className="w-10 h-5"
                   />
-                  <span className="font-bold text-lg">Accept</span>
+                  <span className="font-bold text-lg">Ok</span>
                 </button>
               </Link>
               <button
