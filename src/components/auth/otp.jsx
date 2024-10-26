@@ -1,6 +1,7 @@
 import { useMutation, gql } from "@apollo/client";
 import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../../AuthContext";
 
 const VALIDATE_OTP = gql`
   mutation validateOTP($emailOrPhone: String!, $otp: String!) {
@@ -23,6 +24,7 @@ const GENERATE_OTP = gql`
 export default function OTPPage() {
   const [validateOTP] = useMutation(VALIDATE_OTP);
   const [generateOTP] = useMutation(GENERATE_OTP);
+  const { login } = useAuth();
   const [otp, setOtp] = useState("");
   const [isOtpValid, setIsOtpValid] = useState(false);
   const [otpMessage, setOtpMessage] = useState({ type: "", message: "" });
@@ -77,6 +79,8 @@ export default function OTPPage() {
           type: "success",
           message: "OTP validated successfully!",
         });
+        const { accessToken, refreshToken } = data.validateOTP;
+        login({ accessToken, refreshToken, phoneNumber });
       } else {
         setOtpMessage({
           type: "error",

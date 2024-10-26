@@ -41,7 +41,7 @@ export default function TriggerCard({
             <div className="relative bg-white p-4 w-full max-w-sm max-h-full rounded-lg shadow">
               <button
                 type="button"
-                className="absolute top-3 right-2.5 text-gray-400"
+                className="absolute hover:bg-red-500 hover:text-white top-3 right-2.5 text-gray-400"
                 onClick={handleClose}
               >
                 <span className="sr-only">Close modal</span>
@@ -93,7 +93,7 @@ export default function TriggerCard({
               <div className="flex justify-end px-4 pt-4">
                 <button
                   type="button"
-                  className="top-3 right-2.5 text-gray-400"
+                  className="top-3 right-2.5 hover:bg-red-500 hover:text-white text-gray-400"
                   onClick={handleClose}
                 >
                   <span className="sr-only">Close modal</span>

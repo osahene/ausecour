@@ -17,6 +17,8 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
     setIsAuthenticated(true);
     localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("access_token", userData.accessToken);
+    localStorage.setItem("refresh_token", userData.refreshToken);
   };
 
   // Function to log out
