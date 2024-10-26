@@ -4,7 +4,10 @@ import MainPage from "./components/home";
 import ActionButton from "./components/calltoaction";
 import "./App.css";
 import HeaderBar from "./components/navbar/headerbar";
+import { useAuth } from "./AuthContext";
+
 function App() {
+  const { isAuthenticated } = useAuth();
   return (
     <div>
       <div>
@@ -13,7 +16,7 @@ function App() {
       <div className="App">
         <header className="App-header">
           <MainPage />
-          <ActionButton />
+          {isAuthenticated ? <ActionButton /> : ""}
         </header>
       </div>
     </div>

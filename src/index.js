@@ -1,8 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+} from "@apollo/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
+import { AuthProvider } from "./AuthContext";
 import App from "./App";
 import ContactBook from "./components/contactbook";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
@@ -14,6 +20,7 @@ import Login from "./components/auth/login";
 import ErrorPage from "./components/errorpage";
 import Register from "./components/auth/register";
 import OTPpage from "./components/auth/otp";
+import { setContext } from "@apollo/client/link/context";
 
 const router = createBrowserRouter([
   {
@@ -51,17 +58,34 @@ const router = createBrowserRouter([
   },
 ]);
 
-const client = new ApolloClient({
+const httpLink = createHttpLink({
   uri: "http://127.0.0.1:8000/graphql/",
+});
+
+const authLink = setContext((_, { headers }) => {
+  // Get the access token from local storage if it exists
+  const token = localStorage.getItem("access_token");
+  return {
+    headers: {
+      ...headers,
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <RouterProvider router={router} />
-    </ApolloProvider>
+    <AuthProvider>
+      <ApolloProvider client={client}>
+        <RouterProvider router={router} />
+      </ApolloProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 

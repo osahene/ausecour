@@ -1,6 +1,65 @@
+import { useMutation, gql } from "@apollo/client";
+import React from "react";
+
+const CREATE_CONTACT = gql`
+  mutation CreateContact(
+    $firstName: String!
+    $lastName: String!
+    $emailAddress: String!
+    $phoneNumber: String!
+    $relation: String!
+  ) {
+    createContact(
+      firstName: $firstName
+      lastName: $lastName
+      emailAddress: $emailAddress
+      phoneNumber: $phoneNumber
+      relation: $relation
+    ) {
+      success
+      message
+    }
+  }
+`;
+
 export default function AddContacts() {
+  const [createContact] = useMutation(CREATE_CONTACT);
+
+  const handleCreateContact = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const firstName = formData.get("first_name");
+    const lastName = formData.get("last_name");
+    const emailAddress = formData.get("email_address");
+    const phoneNumber = formData.get("phone_number");
+    const relation = formData.get("relation");
+
+    try {
+      const { data } = await createContact({
+        variables: {
+          firstName,
+          lastName,
+          emailAddress,
+          phoneNumber,
+          relation,
+        },
+      });
+
+      if (data.createContact.success) {
+        alert("Contact added and verification link sent.");
+      } else {
+        alert(data.createContact.message);
+      }
+    } catch (error) {
+      console.error("Error adding contact:", error);
+    }
+  };
+
   return (
-    <form className="bg-gray-800 dark:text-white relative overflow-x-auto shadow-md sm:rounded-lg">
+    <form
+      onSubmit={handleCreateContact}
+      className="bg-gray-800 dark:text-white relative overflow-x-auto shadow-md sm:rounded-lg"
+    >
       <div className="m-10 space-y-12 ">
         <div className="border-b border-gray-900/10 pb-12">
           <h2 className="text-xl font-semibold leading-7 text-white">
@@ -22,7 +81,7 @@ export default function AddContacts() {
               <div className="mt-2">
                 <input
                   id="first-name"
-                  name="first-name"
+                  name="first_name"
                   type="text"
                   autoComplete="given-name"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-lg sm:leading-6"
@@ -40,7 +99,7 @@ export default function AddContacts() {
               <div className="mt-2">
                 <input
                   id="last-name"
-                  name="last-name"
+                  name="last_name"
                   type="text"
                   autoComplete="family-name"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-lg sm:leading-6"
@@ -58,7 +117,7 @@ export default function AddContacts() {
               <div className="mt-2">
                 <input
                   id="email"
-                  name="email"
+                  name="email_address"
                   type="email"
                   autoComplete="email"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-lg sm:leading-6"
@@ -75,7 +134,7 @@ export default function AddContacts() {
               <div className="mt-2">
                 <input
                   id="phonenumber"
-                  name="phonenumber"
+                  name="phone_number"
                   type="tel"
                   autoComplete="phone_number"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-lg sm:leading-6"

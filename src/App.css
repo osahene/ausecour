@@ -68,3 +68,20 @@
   background-color: #f8d7da;
   color: #721c24;
 }
+
+/* Countdown text styles */
+.countdown-text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 24px 0px;
+}
+
+/* Countdown text paragraph styles */
+.countdown-text > p {
+  font-size: 13px;
+  font-weight: 400;
+  color: #fdfdfd;
+}
+
+/* Countdown text button styles */
