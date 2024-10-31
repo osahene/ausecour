@@ -44,6 +44,7 @@ export default function AddContacts() {
           relation,
         },
       });
+      console.table(data);
 
       if (data.createContact.success) {
         alert("Contact added and verification link sent.");
@@ -52,6 +53,13 @@ export default function AddContacts() {
       }
     } catch (error) {
       console.error("Error adding contact:", error);
+      if (
+        error.networkError &&
+        error.networkError.result &&
+        error.networkError.result.errors
+      ) {
+        console.log("GraphQL error details:", error.networkError.result.errors);
+      }
     }
   };
 

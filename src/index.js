@@ -78,6 +78,8 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+export default client;
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>

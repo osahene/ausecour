@@ -9,6 +9,8 @@ const VALIDATE_OTP = gql`
       success
       accessToken
       refreshToken
+      firstName
+      lastName
     }
   }
 `;

@@ -1,4 +1,12 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
@@ -6,31 +14,73 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("user");
-    if (loggedInUser) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(loggedInUser));
-    }
+  const logout = useCallback(() => {
+    setUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem("user");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
   }, []);
+
+  const refreshAccessToken = useCallback(async () => {
+    try {
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (!refreshToken) return logout();
+
+      const response = await axios.post("http://127.0.0.1:8000/graphql/", {
+        query: `mutation {
+          refreshToken(refreshToken: "${refreshToken}") {
+            token
+          }
+        }`,
+      });
+
+      const newAccessToken = response.data.data.refreshToken.token;
+      localStorage.setItem("access_token", newAccessToken);
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+      logout();
+    }
+  }, [logout]);
+
+  const scheduleTokenCheck = useCallback(() => {
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) return;
+
+    const expiry = jwtDecode(accessToken).exp;
+    const now = Date.now() / 1000;
+
+    if (expiry - now < 60) {
+      refreshAccessToken();
+    } else {
+      setTimeout(scheduleTokenCheck, (expiry - now - 60) * 1000);
+    }
+  }, [refreshAccessToken]);
+
   const login = (userData) => {
     setUser(userData);
     setIsAuthenticated(true);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("access_token", userData.accessToken);
     localStorage.setItem("refresh_token", userData.refreshToken);
+    scheduleTokenCheck();
   };
 
-  // Function to log out
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem("user");
-  };
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("user");
+    const accessToken = localStorage.getItem("access_token");
+    if (loggedInUser && accessToken) {
+      setIsAuthenticated(true);
+      setUser(JSON.parse(loggedInUser));
+      scheduleTokenCheck(); // Start the token check on initial load if user is logged in
+    }
+  }, [scheduleTokenCheck]);
+
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
 export const useAuth = () => useContext(AuthContext);

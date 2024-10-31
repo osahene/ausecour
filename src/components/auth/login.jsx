@@ -16,6 +16,7 @@ export default function Login() {
   const [LoginUser, { loading, error }] = useMutation(LOGIN_USER, {
     onCompleted: (data) => {
       if (data.login.success) {
+        localStorage.setItem("userPhoneNumber", phone);
         navigate("/otp");
       } else {
         alert("Login Quick");
@@ -25,6 +26,7 @@ export default function Login() {
       alert(error.message);
     },
   });
+  console.table(LoginUser);
   const handleLogin = (e) => {
     e.preventDefault();
     LoginUser({ variables: { emailOrPhone: phone } });
