@@ -82,10 +82,10 @@ export default function HeaderBar() {
                   >
                     <div className="px-4 py-3">
                       <span className="block text-sm text-gray-900 dark:text-white">
-                        {user.name}
+                        {user.firstName}
                       </span>
-                      <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
-                        {user.emailAddress}
+                      <span className="block px-2 text-sm text-gray-500 truncate dark:text-gray-400">
+                        {user.lastName}
                       </span>
                     </div>
                     <ul className="py-2" aria-labelledby="user-menu-button">

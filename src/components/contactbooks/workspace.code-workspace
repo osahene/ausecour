@@ -1,4 +1,8 @@
 {
-	"folders": [],
-	"settings": {}
+  "folders": [
+    {
+      "path": "../../../../../../frontend/trialUser"
+    }
+  ],
+  "settings": {}
 }

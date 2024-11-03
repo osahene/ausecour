@@ -1,30 +1,7 @@
-import { useMutation, gql } from "@apollo/client";
+import { apiService } from "../../api/axios";
 import { Link, useNavigate } from "react-router-dom";
-const REGISTER = gql`
-  mutation Register(
-    $firstName: String!
-    $lastName: String!
-    $emailAddress: String!
-    $phoneNumber: String!
-  ) {
-    Register(
-      firstName: $firstName
-      lastName: $lastName
-      emailAddress: $emailAddress
-      phoneNumber: $phoneNumber
-    ) {
-      user {
-        firstName
-        lastName
-        emailAddress
-        phoneNumber
-      }
-    }
-  }
-`;
 
 export default function Register() {
-  const [Register] = useMutation(REGISTER);
   const navigate = useNavigate();
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -35,8 +12,11 @@ export default function Register() {
     const phoneNumber = formData.get("phone_number");
 
     try {
-      const res = await Register({
-        variables: { firstName, lastName, emailAddress, phoneNumber },
+      const res = await apiService.Register({
+        firstName,
+        lastName,
+        emailAddress,
+        phoneNumber,
       });
       if (res.data) {
         localStorage.setItem("userPhoneNumber", phoneNumber);

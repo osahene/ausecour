@@ -1,31 +1,9 @@
-import { useMutation, gql } from "@apollo/client";
 import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
-
-const VALIDATE_OTP = gql`
-  mutation validateOTP($emailOrPhone: String!, $otp: String!) {
-    validateOTP(emailOrPhone: $emailOrPhone, otp: $otp) {
-      success
-      accessToken
-      refreshToken
-      firstName
-      lastName
-    }
-  }
-`;
-
-const GENERATE_OTP = gql`
-  mutation generateOTP($emailOrPhone: String!) {
-    generateOTP(emailOrPhone: $emailOrPhone) {
-      otpCode
-    }
-  }
-`;
+import { apiService } from "../../api/axios";
 
 export default function OTPPage() {
-  const [validateOTP] = useMutation(VALIDATE_OTP);
-  const [generateOTP] = useMutation(GENERATE_OTP);
   const { login } = useAuth();
   const [otp, setOtp] = useState("");
   const [isOtpValid, setIsOtpValid] = useState(false);
@@ -57,7 +35,7 @@ export default function OTPPage() {
 
     setTimer({ minutes: 0, seconds: 10 }); // Reset timer
     try {
-      await generateOTP({ variables: { emailOrPhone: phoneNumber } });
+      await apiService.generate({ emailOrPhone: phoneNumber });
       setOtpMessage({ type: "success", message: "OTP resent successfully." });
     } catch (error) {
       setOtpMessage({ type: "error", message: "Failed to resend OTP." });
@@ -71,7 +49,7 @@ export default function OTPPage() {
     const phoneNumber = localStorage.getItem("userPhoneNumber");
 
     try {
-      const { data } = await validateOTP({
+      const { data } = await apiService.otpLogin({
         variables: { emailOrPhone: phoneNumber, otp },
       });
 
@@ -81,8 +59,9 @@ export default function OTPPage() {
           type: "success",
           message: "OTP validated successfully!",
         });
-        const { accessToken, refreshToken } = data.validateOTP;
-        login({ accessToken, refreshToken, phoneNumber });
+        const { token, firstName, lastName } = data.validateOTP;
+        console.log("data", data.validateOTP, firstName);
+        login({ token, firstName, lastName, phoneNumber });
       } else {
         setOtpMessage({
           type: "error",

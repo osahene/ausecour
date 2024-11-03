@@ -1,11 +1,5 @@
-import React from "react";
+import React from "react"; // { useState }
 import ReactDOM from "react-dom/client";
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  createHttpLink,
-} from "@apollo/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { AuthProvider } from "./AuthContext";
@@ -20,74 +14,154 @@ import Login from "./components/auth/login";
 import ErrorPage from "./components/errorpage";
 import Register from "./components/auth/register";
 import OTPpage from "./components/auth/otp";
-import { setContext } from "@apollo/client/link/context";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import dayjs from "dayjs";
+import { ReactNotifications, Store } from "react-notifications-component";
+import "react-notifications-component/dist/theme.css";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/contact",
-    element: <ContactBook />,
-  },
-  {
-    path: "/settings",
-    element: <Usersettings />,
-  },
-  {
-    path: "/accept",
-    element: <Accept />,
-  },
-  {
-    path: "/accept/invite",
-    element: <Invitation />,
-  },
-  {
-    path: "/register",
-    element: <Register />,
-  },
-  {
-    path: "/otp",
-    element: <OTPpage />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
+  { path: "/", element: <App />, errorElement: <ErrorPage /> },
+  { path: "/contact", element: <ContactBook /> },
+  { path: "/settings", element: <Usersettings /> },
+  { path: "/accept", element: <Accept /> },
+  { path: "/accept/invite", element: <Invitation /> },
+  { path: "/register", element: <Register /> },
+  { path: "/otp", element: <OTPpage /> },
+  { path: "/login", element: <Login /> },
 ]);
 
-const httpLink = createHttpLink({
-  uri: "http://127.0.0.1:8000/graphql/",
+// Axios instance
+const $axios = axios.create({
+  baseURL: process.env.REACT_APP_BASE_URL || "http://127.0.0.1:8000",
+  withCredentials: true,
+  headers: { "Content-type": "application/json" },
 });
 
-const authLink = setContext((_, { headers }) => {
-  // Get the access token from local storage if it exists
-  const token = localStorage.getItem("access_token");
-  return {
-    headers: {
-      ...headers,
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  };
-});
+// React spinner and notification setup
+const LoadingSpinner = ({ loading }) => (
+  <ClipLoader
+    color="blue"
+    loading={loading}
+    cssOverride={{ display: "block", margin: "0 auto" }}
+    size={150}
+  />
+);
 
-const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
-});
+const TakeRefreshToken = async () => {
+  const refreshToken = localStorage.getItem("refreshToken");
+  if (!refreshToken) return null;
 
-export default client;
+  try {
+    const response = await axios.post(
+      `${$axios.defaults.baseURL}account/token/refresh/`,
+      {
+        refresh: refreshToken,
+      }
+    );
 
+    const { access, refresh } = response.data;
+    if (access) {
+      $axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+      localStorage.setItem("accessToken", access);
+      if (refresh) {
+        localStorage.setItem("refreshToken", refresh);
+      }
+      return { accessToken: access, refreshToken: refresh || refreshToken };
+    }
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.detail || error.message || "Error refreshing token";
+    Store.addNotification({
+      title: "Token Error",
+      message: errorMessage,
+      type: "danger",
+      insert: "top",
+      container: "top-right",
+      dismiss: {
+        duration: 3000,
+        onScreen: true,
+      },
+    });
+    return null;
+  }
+};
+
+// Axios interceptors for requests and responses
+$axios.interceptors.request.use(
+  async (req) => {
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+
+    let accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      const user = jwtDecode(accessToken);
+      const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
+
+      if (!isExpired) {
+        req.headers.Authorization = `Bearer ${accessToken}`;
+      } else {
+        const tokens = await TakeRefreshToken();
+        if (tokens && tokens.accessToken) {
+          req.headers.Authorization = `Bearer ${tokens.accessToken}`;
+        } else {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          window.location.href = "/login";
+        }
+      }
+    }
+
+    // setLoading(false);
+    return req;
+  },
+  (error) => {
+    // setLoading(false);
+    return Promise.reject(error);
+  }
+);
+
+$axios.interceptors.response.use(
+  (response) => {
+    Store.addNotification({
+      title: "Success",
+      message: "Request completed successfully",
+      type: "success",
+      insert: "top",
+      container: "top-right",
+      dismiss: {
+        duration: 2000,
+        onScreen: true,
+      },
+    });
+    return response;
+  },
+  (error) => {
+    Store.addNotification({
+      title: "Error",
+      message: error.message || "Request failed",
+      type: "danger",
+      insert: "top",
+      container: "top-right",
+      dismiss: {
+        duration: 3000,
+        onScreen: true,
+      },
+    });
+    return Promise.reject(error);
+  }
+);
+export default $axios;
+// Render the React app
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <ApolloProvider client={client}>
-        <RouterProvider router={router} />
-      </ApolloProvider>
+      <ReactNotifications />
+      <RouterProvider router={router} />
     </AuthProvider>
+    <LoadingSpinner loading={false} />
   </React.StrictMode>
 );
 
