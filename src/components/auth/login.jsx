@@ -1,35 +1,45 @@
-import { useMutation, gql } from "@apollo/client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-const LOGIN_USER = gql`
-  mutation LoginUser($emailOrPhone: String!) {
-    login(emailOrPhone: $emailOrPhone) {
-      success
-    }
-  }
-`;
+import apiService from "../../api/axios";
+import { Store } from "react-notifications-component";
 
 export default function Login() {
-  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [LoginUser, { loading, error }] = useMutation(LOGIN_USER, {
-    onCompleted: (data) => {
-      if (data.login.success) {
-        localStorage.setItem("userPhoneNumber", phone);
-        navigate("/otp");
-      } else {
-        alert("Login Quick");
-      }
-    },
-    onError: (error) => {
-      alert(error.message);
-    },
-  });
-  console.table(LoginUser);
-  const handleLogin = (e) => {
+
+  const showNotification = (type, message) => {
+    Store.addNotification({
+      title: type === "success" ? "Success" : "Error",
+      message,
+      type,
+      insert: "top",
+      container: "top-right",
+      dismiss: {
+        duration: 3000,
+        onScreen: true,
+      },
+    });
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    LoginUser({ variables: { emailOrPhone: phone } });
+    const formData = new FormData(e.target);
+    const emailOrPhone = formData.get("emailOrPhone");
+
+    try {
+      const res = await apiService.login({ emailOrPhone });
+      if (res.status === 200) {
+        localStorage.setItem("emailOrPhone", emailOrPhone);
+        showNotification("success", "Account valid");
+        navigate("/otp");
+      }
+    } catch (error) {
+      const errorMsg =
+        error.response?.data?.message || "An error occurred. Please try again.";
+      showNotification("error", errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <>
@@ -58,15 +68,13 @@ export default function Login() {
                       htmlFor="password"
                       className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                     >
-                      Phone Number
+                      Phone Number or Email Address
                     </label>
                     <input
                       type="text"
-                      name="phone"
+                      name="emailOrPhone"
                       id="phone_number"
-                      placeholder="+233123456789"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+233123456789 or abc@efg.com"
                       className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       required
                     />
@@ -100,7 +108,6 @@ export default function Login() {
                     {loading ? "Signing in..." : "Sign in"}
                   </button>
 
-                  {error && <p className="text-red-500">{error.message}</p>}
                   <p className="text-lg font-light text-gray-500 dark:text-gray-400">
                     Don’t have an account yet?{" "}
                     <Link

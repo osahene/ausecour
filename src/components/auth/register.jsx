@@ -1,4 +1,4 @@
-import { apiService } from "../../api/axios";
+import apiService from "../../api/axios";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
@@ -12,7 +12,7 @@ export default function Register() {
     const phoneNumber = formData.get("phone_number");
 
     try {
-      const res = await apiService.Register({
+      const res = await apiService.register({
         firstName,
         lastName,
         emailAddress,
@@ -64,7 +64,7 @@ export default function Register() {
                       id="first_name"
                       className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Akua"
-                      required=""
+                      required
                     />
                   </div>
                   <div>
@@ -80,7 +80,7 @@ export default function Register() {
                       id="last_name"
                       className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Asumah"
-                      required=""
+                      required
                     />
                   </div>
                   <div>
@@ -96,7 +96,7 @@ export default function Register() {
                       id="email_address"
                       className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="name@company.com"
-                      required=""
+                      required
                     />
                   </div>
                   <div>
@@ -112,7 +112,7 @@ export default function Register() {
                       id="phone_number"
                       placeholder="+233123456789"
                       className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      required=""
+                      required
                     />
                   </div>
                   <button

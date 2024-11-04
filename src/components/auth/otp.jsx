@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
-import { apiService } from "../../api/axios";
+import apiService from "../../api/axios";
+import { Store } from "react-notifications-component";
 
 export default function OTPPage() {
   const { login } = useAuth();
   const [otp, setOtp] = useState("");
   const [isOtpValid, setIsOtpValid] = useState(false);
-  const [otpMessage, setOtpMessage] = useState({ type: "", message: "" });
-  const [showNotification, setShowNotification] = useState(false);
   const [timer, setTimer] = useState({ minutes: 0, seconds: 5 });
 
   useEffect(() => {
-    let interval;
-    if (timer.seconds > 0 || timer.minutes > 0) {
-      interval = setInterval(() => {
+    if (timer.minutes > 0 || timer.seconds > 0) {
+      const interval = setInterval(() => {
         setTimer((prev) => {
           if (prev.seconds > 0) {
             return { ...prev, seconds: prev.seconds - 1 };
@@ -26,146 +24,124 @@ export default function OTPPage() {
           }
         });
       }, 1000);
+      return () => clearInterval(interval);
     }
-    return () => clearInterval(interval);
   }, [timer]);
 
-  const resendOTP = async () => {
-    const phoneNumber = localStorage.getItem("userPhoneNumber");
+  const showNotification = (type, message) => {
+    Store.addNotification({
+      title: type === "success" ? "Success" : "Error",
+      message,
+      type,
+      insert: "top",
+      container: "top-right",
+      dismiss: {
+        duration: 5000,
+        onScreen: true,
+      },
+    });
+  };
 
-    setTimer({ minutes: 0, seconds: 10 }); // Reset timer
+  const resendOTP = async () => {
+    const phoneNumber = localStorage.getItem("emailOrPhone");
+    setTimer({ minutes: 0, seconds: 30 }); // Reset timer
+
     try {
       await apiService.generate({ emailOrPhone: phoneNumber });
-      setOtpMessage({ type: "success", message: "OTP resent successfully." });
+      showNotification("success", "OTP resent successfully.");
     } catch (error) {
-      setOtpMessage({ type: "error", message: "Failed to resend OTP." });
+      showNotification("danger", error.message);
     }
-    setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 5000);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const phoneNumber = localStorage.getItem("userPhoneNumber");
+    const phoneNumber = localStorage.getItem("emailOrPhone");
 
     try {
-      const { data } = await apiService.otpLogin({
-        variables: { emailOrPhone: phoneNumber, otp },
+      const res = await apiService.otpLogin({
+        emailOrPhone: phoneNumber,
+        otp,
       });
-
-      if (data.validateOTP.success) {
+      if (res.status === 200) {
         setIsOtpValid(true);
-        setOtpMessage({
-          type: "success",
-          message: "OTP validated successfully!",
-        });
-        const { token, firstName, lastName } = data.validateOTP;
-        console.log("data", data.validateOTP, firstName);
-        login({ token, firstName, lastName, phoneNumber });
+        showNotification("success", "OTP validated successfully!");
+        const { access, refresh, firstName, lastName } = res.data;
+        login({ access, refresh, firstName, lastName });
       } else {
-        setOtpMessage({
-          type: "error",
-          message: "Invalid OTP. Please try again.",
-        });
+        showNotification("danger", "Invalid OTP. Please try again.");
       }
     } catch (error) {
-      setOtpMessage({
-        type: "error",
-        message: "OTP validation failed. Please try again.",
-      });
+      showNotification("danger", "OTP validation failed. Please try again.");
     }
-
-    setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 5000);
   };
 
+  if (isOtpValid) return <Navigate to="/" />;
+
   return (
-    <>
-      {isOtpValid && <Navigate to="/" />}
-
-      <div className="App-header">
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-          <div className="w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-            <div className="p-6 space-y-4 sm:p-8">
-              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                Enter your One-Time Password
-              </h1>
-
-              {showNotification && (
-                <div
-                  className={`alert ${
-                    otpMessage.type === "error"
-                      ? "alert-danger"
-                      : "alert-success"
+    <div className="App-header">
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <div className="w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+          <div className="p-6 space-y-4 sm:p-8">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+              Enter your One-Time Password
+            </h1>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div>
+                <label
+                  htmlFor="otp"
+                  className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+                >
+                  OTP
+                </label>
+                <input
+                  type="text"
+                  name="otp"
+                  id="otp"
+                  placeholder="Enter OTP"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
+                  required
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+              </div>
+              {/* Resend OTP logic */}
+              <div className="countdown-text">
+                {timer.minutes > 0 || timer.seconds > 0 ? (
+                  <p>
+                    Time Remaining:{" "}
+                    <span style={{ fontWeight: 600 }}>
+                      {timer.minutes < 10 ? `0${timer.minutes}` : timer.minutes}
+                      :
+                      {timer.seconds < 10 ? `0${timer.seconds}` : timer.seconds}
+                    </span>
+                  </p>
+                ) : (
+                  <p>Didn't receive code?</p>
+                )}
+                <button
+                  type="button"
+                  disabled={timer.minutes > 0 || timer.seconds > 0}
+                  onClick={resendOTP}
+                  className={`${
+                    timer.minutes > 0 || timer.seconds > 0
+                      ? "text-gray-400"
+                      : "text-red-500"
                   }`}
                 >
-                  {otpMessage.message}
-                </div>
-              )}
-
-              <form className="space-y-4" onSubmit={handleSubmit}>
-                <div>
-                  <label
-                    htmlFor="otp"
-                    className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
-                  >
-                    OTP
-                  </label>
-                  <input
-                    type="text"
-                    name="otp"
-                    id="otp"
-                    placeholder="Enter OTP"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600"
-                    required
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                  />
-                </div>
-
-                {/* Resend OTP logic */}
-                <div className="countdown-text">
-                  {timer.minutes > 0 || timer.seconds > 0 ? (
-                    <p>
-                      Time Remaining:{" "}
-                      <span style={{ fontWeight: 600 }}>
-                        {timer.minutes < 10
-                          ? `0${timer.minutes}`
-                          : timer.minutes}
-                        :
-                        {timer.seconds < 10
-                          ? `0${timer.seconds}`
-                          : timer.seconds}
-                      </span>
-                    </p>
-                  ) : (
-                    <p>Didn't receive code?</p>
-                  )}
-                  <button
-                    type="button"
-                    disabled={timer.minutes > 0 || timer.seconds > 0}
-                    onClick={resendOTP}
-                    className={`${
-                      timer.minutes > 0 || timer.seconds > 0
-                        ? "text-gray-400"
-                        : "text-red-500"
-                    }`}
-                  >
-                    Resend OTP
-                  </button>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full mt-8 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 font-medium rounded-lg text-lg px-5 py-2.5"
-                >
-                  Submit
+                  Resend OTP
                 </button>
-              </form>
-            </div>
+              </div>
+              <button
+                type="submit"
+                className="w-full mt-8 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 font-medium rounded-lg text-lg px-5 py-2.5"
+              >
+                Submit
+              </button>
+            </form>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
