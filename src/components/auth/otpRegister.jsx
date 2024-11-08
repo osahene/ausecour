@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../../AuthContext";
 import apiService from "../../api/axios";
 
-export default function OTPPage() {
-  const { login } = useAuth();
+export default function OTPRegisterPage() {
   const [otp, setOtp] = useState("");
-  const [isOtpValid, setIsOtpValid] = useState(false);
   const [timer, setTimer] = useState({ minutes: 0, seconds: 5 });
 
   useEffect(() => {
@@ -28,32 +25,28 @@ export default function OTPPage() {
   }, [timer]);
 
   const resendOTP = async () => {
-    const phoneNumber = localStorage.getItem("emailOrPhone");
+    const phoneNumber = localStorage.getItem("userPhoneNumber");
     setTimer({ minutes: 0, seconds: 30 }); // Reset timer
 
     try {
-      await apiService.generate({ emailOrPhone: phoneNumber });
+      await apiService.generateRegister({ phoneNumber: phoneNumber });
     } catch (error) {}
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const phoneNumber = localStorage.getItem("emailOrPhone");
+    const phoneNumber = localStorage.getItem("userPhoneNumber");
 
     try {
       const res = await apiService.otpLogin({
-        emailOrPhone: phoneNumber,
+        phoneNumber: phoneNumber,
         otp,
       });
       if (res.status === 200) {
-        setIsOtpValid(true);
-        const { access, refresh, firstName, lastName } = res.data;
-        login({ access, refresh, firstName, lastName });
+        Navigate("/login");
       }
     } catch (error) {}
   };
-
-  if (isOtpValid) return <Navigate to="/" />;
 
   return (
     <div className="App-header">

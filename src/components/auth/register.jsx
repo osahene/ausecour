@@ -20,7 +20,7 @@ export default function Register() {
       });
       if (res.data) {
         localStorage.setItem("userPhoneNumber", phoneNumber);
-        navigate("/otp");
+        navigate("/otpRegister");
       }
     } catch (error) {
       console.error("Error during registration", error);

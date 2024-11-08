@@ -14,6 +14,7 @@ import Login from "./components/auth/login";
 import ErrorPage from "./components/errorpage";
 import Register from "./components/auth/register";
 import OTPpage from "./components/auth/otp";
+import OTPRegisterPage from "./components/auth/otpRegister";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
   { path: "/accept/invite", element: <Invitation /> },
   { path: "/register", element: <Register /> },
   { path: "/otp", element: <OTPpage /> },
+  { path: "/otpRegister", element: <OTPRegisterPage /> },
   { path: "/login", element: <Login /> },
 ]);
 
@@ -50,25 +52,25 @@ const LoadingSpinner = ({ loading }) => (
 );
 
 const TakeRefreshToken = async () => {
-  const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) return null;
+  const refresh_token = localStorage.getItem("refresh_token");
+  if (!refresh_token) return null;
 
   try {
     const response = await axios.post(
-      `${$axios.defaults.baseURL}account/token/refresh/`,
+      `${$axios.defaults.baseURL}/account/token/refresh/`,
       {
-        refresh: refreshToken,
+        refresh: refresh_token,
       }
     );
 
     const { access, refresh } = response.data;
     if (access) {
       $axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
-      localStorage.setItem("accessToken", access);
+      localStorage.setItem("access_token", access);
       if (refresh) {
-        localStorage.setItem("refreshToken", refresh);
+        localStorage.setItem("refresh_token", refresh);
       }
-      return { accessToken: access, refreshToken: refresh || refreshToken };
+      return { access_token: access, refresh_token: refresh || refresh_token };
     }
   } catch (error) {
     const errorMessage =
@@ -94,7 +96,9 @@ $axios.interceptors.request.use(
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
 
-    let accessToken = localStorage.getItem("accessToken");
+    let accessToken = localStorage.getItem("access_token");
+    // let res = accessToken.slice(1, -1);
+    // console.log("access", res);
     if (accessToken) {
       const user = jwtDecode(accessToken);
       const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
@@ -103,11 +107,11 @@ $axios.interceptors.request.use(
         req.headers.Authorization = `Bearer ${accessToken}`;
       } else {
         const tokens = await TakeRefreshToken();
-        if (tokens && tokens.accessToken) {
-          req.headers.Authorization = `Bearer ${tokens.accessToken}`;
+        if (tokens && tokens.access_token) {
+          req.headers.Authorization = `Bearer ${tokens.access_token}`;
         } else {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
           window.location.href = "/login";
         }
       }

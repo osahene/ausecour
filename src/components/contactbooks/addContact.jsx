@@ -1,29 +1,21 @@
-import { useMutation, gql } from "@apollo/client";
 import React from "react";
-
-const CREATE_CONTACT = gql`
-  mutation CreateContact(
-    $firstName: String!
-    $lastName: String!
-    $emailAddress: String!
-    $phoneNumber: String!
-    $relation: String!
-  ) {
-    createContact(
-      firstName: $firstName
-      lastName: $lastName
-      emailAddress: $emailAddress
-      phoneNumber: $phoneNumber
-      relation: $relation
-    ) {
-      success
-      message
-    }
-  }
-`;
+import apiService from "../../api/axios";
+import { Store } from "react-notifications-component";
 
 export default function AddContacts() {
-  const [createContact] = useMutation(CREATE_CONTACT);
+  const showNotification = (type, message) => {
+    Store.addNotification({
+      title: type === "success" ? "Success" : "Error",
+      message,
+      type,
+      insert: "top",
+      container: "top-right",
+      dismiss: {
+        duration: 5000,
+        onScreen: true,
+      },
+    });
+  };
 
   const handleCreateContact = async (event) => {
     event.preventDefault();
@@ -35,31 +27,21 @@ export default function AddContacts() {
     const relation = formData.get("relation");
 
     try {
-      const { data } = await createContact({
-        variables: {
-          firstName,
-          lastName,
-          emailAddress,
-          phoneNumber,
-          relation,
-        },
+      const res = await apiService.createRelation({
+        firstName,
+        lastName,
+        emailAddress,
+        phoneNumber,
+        relation,
       });
-      console.table(data);
 
-      if (data.createContact.success) {
-        alert("Contact added and verification link sent.");
-      } else {
-        alert(data.createContact.message);
+      if (res.status === 201) {
+        showNotification("success", res.data);
       }
     } catch (error) {
-      console.error("Error adding contact:", error);
-      if (
-        error.networkError &&
-        error.networkError.result &&
-        error.networkError.result.errors
-      ) {
-        console.log("GraphQL error details:", error.networkError.result.errors);
-      }
+      const errorMsg =
+        error.response?.data?.message || "An error occurred. Please try again.";
+      showNotification("error", errorMsg);
     }
   };
 

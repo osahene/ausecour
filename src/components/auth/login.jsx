@@ -1,25 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiService from "../../api/axios";
-import { Store } from "react-notifications-component";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const showNotification = (type, message) => {
-    Store.addNotification({
-      title: type === "success" ? "Success" : "Error",
-      message,
-      type,
-      insert: "top",
-      container: "top-right",
-      dismiss: {
-        duration: 3000,
-        onScreen: true,
-      },
-    });
-  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -30,13 +15,9 @@ export default function Login() {
       const res = await apiService.login({ emailOrPhone });
       if (res.status === 200) {
         localStorage.setItem("emailOrPhone", emailOrPhone);
-        showNotification("success", "Account valid");
         navigate("/otp");
       }
     } catch (error) {
-      const errorMsg =
-        error.response?.data?.message || "An error occurred. Please try again.";
-      showNotification("error", errorMsg);
     } finally {
       setLoading(false);
     }
