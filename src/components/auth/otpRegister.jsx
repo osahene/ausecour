@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../api/axios";
+import { useAuth } from "../../AuthContext";
 
 export default function OTPRegisterPage() {
+  const { login } = useAuth();
+
   const [otp, setOtp] = useState("");
   const [timer, setTimer] = useState({ minutes: 0, seconds: 5 });
   const navigate = useNavigate();
+
   useEffect(() => {
     if (timer.minutes > 0 || timer.seconds > 0) {
       const interval = setInterval(() => {
@@ -42,11 +46,10 @@ export default function OTPRegisterPage() {
         phoneNumber: phoneNumber,
         otp,
       });
-      console.log("res", res);
       if (res.status === 200) {
-        console.log("hi");
+        const { access, refresh, first_name, last_name } = res.data;
+        login({ access, refresh, first_name, last_name });
         navigate("/");
-        console.log("low");
       }
     } catch (error) {}
   };

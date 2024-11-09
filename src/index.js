@@ -142,9 +142,10 @@ $axios.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.log("ind", error);
     Store.addNotification({
       title: "Error",
-      message: error.message || "Request failed",
+      message: error.response.data.detail || "Request failed",
       type: "danger",
       insert: "top",
       container: "top-right",

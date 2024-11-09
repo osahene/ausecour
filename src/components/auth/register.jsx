@@ -154,10 +154,10 @@ export default function Register() {
 
                     <div className="relative">
                       <input
-                        type={isPasswordVisible ? "password" : "text"}
+                        type={isPasswordVisible ? "text" : "password"}
                         placeholder="Password"
                         name="password"
-                        className="w-full px-4 py-2 text-base border border-gray-300 rounded outline-none focus:ring-blue-500 focus:border-blue-500 focus:ring-1"
+                        className="border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       />
                       <button
                         type="button"

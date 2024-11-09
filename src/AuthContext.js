@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("access_token", JSON.stringify(userData.access));
     localStorage.setItem("refresh_token", JSON.stringify(userData.refresh));
-    localStorage.setItem("first_name", JSON.stringify(userData.firstName));
-    localStorage.setItem("last_name", JSON.stringify(userData.lastName));
+    localStorage.setItem("first_name", JSON.stringify(userData.first_name));
+    localStorage.setItem("last_name", JSON.stringify(userData.last_name));
     // scheduleTokenCheck();
   };
 

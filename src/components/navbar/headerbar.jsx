@@ -80,12 +80,12 @@ export default function HeaderBar() {
                     }`}
                     id="user-dropdown"
                   >
-                    <div className="px-4 py-3">
+                    <div className="px-4 w-full flex flex-row py-3">
                       <span className="block text-sm text-gray-900 dark:text-white">
-                        {user.firstName}
+                        {user.first_name}
                       </span>
                       <span className="block px-2 text-sm text-gray-500 truncate dark:text-gray-400">
-                        {user.lastName}
+                        {user.last_name}
                       </span>
                     </div>
                     <ul className="py-2" aria-labelledby="user-menu-button">
