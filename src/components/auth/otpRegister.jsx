@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import apiService from "../../api/axios";
 
 export default function OTPRegisterPage() {
   const [otp, setOtp] = useState("");
   const [timer, setTimer] = useState({ minutes: 0, seconds: 5 });
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (timer.minutes > 0 || timer.seconds > 0) {
       const interval = setInterval(() => {
@@ -38,12 +38,15 @@ export default function OTPRegisterPage() {
     const phoneNumber = localStorage.getItem("userPhoneNumber");
 
     try {
-      const res = await apiService.otpLogin({
+      const res = await apiService.otpRegister({
         phoneNumber: phoneNumber,
         otp,
       });
+      console.log("res", res);
       if (res.status === 200) {
-        Navigate("/login");
+        console.log("hi");
+        navigate("/");
+        console.log("low");
       }
     } catch (error) {}
   };
@@ -54,7 +57,7 @@ export default function OTPRegisterPage() {
         <div className="w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Enter your One-Time Password
+              Verify your phone number with the OTP
             </h1>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
