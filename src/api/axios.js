@@ -11,5 +11,7 @@ const apiService = {
   otpLogin: (data) => $axios.post("/account/user-login-otp/", data),
   // Create Relation
   createRelation: (data) => $axios.post("/account/create-relation/", data),
+  getMyContacts: () => $axios.get("/account/my-contacts/"),
+  getMyDependants: () => $axios.get("/account/my-dependants/"),
 };
 export default apiService;

@@ -24,7 +24,8 @@ export default function Login() {
       console.log("lg", res);
       if (res.status === 200) {
         localStorage.setItem("email", email);
-        const { access, refresh, first_name, last_name } = res.data;
+        const { first_name, last_name } = res.data;
+        const { access, refresh } = res.data.tokens;
         login({ access, refresh, first_name, last_name });
         navigate("/");
       }

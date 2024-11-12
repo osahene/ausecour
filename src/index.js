@@ -93,37 +93,40 @@ const TakeRefreshToken = async () => {
 // Axios interceptors for requests and responses
 $axios.interceptors.request.use(
   async (req) => {
-    // const [loading, setLoading] = useState(false);
-    // setLoading(true);
-
     let accessToken = localStorage.getItem("access_token");
-    // let res = accessToken.slice(1, -1);
-    // console.log("access", res);
-    if (accessToken) {
-      const user = jwtDecode(accessToken);
-      const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
 
-      if (!isExpired) {
-        req.headers.Authorization = `Bearer ${accessToken}`;
-      } else {
-        const tokens = await TakeRefreshToken();
-        if (tokens && tokens.access_token) {
-          req.headers.Authorization = `Bearer ${tokens.access_token}`;
+    if (accessToken) {
+      if (accessToken.startsWith('"') && accessToken.endsWith('"')) {
+        accessToken = accessToken.slice(1, -1);
+      }
+
+      try {
+        const user = jwtDecode(accessToken);
+        const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
+
+        if (!isExpired) {
+          req.headers.Authorization = `Bearer ${accessToken}`;
         } else {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
-          window.location.href = "/login";
+          // Refresh the token if expired
+          const tokens = await TakeRefreshToken();
+          if (tokens && tokens.access_token) {
+            req.headers.Authorization = `Bearer ${tokens.access_token}`;
+          } else {
+            // Clear tokens and redirect to login if unable to refresh
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            window.location.href = "/login";
+          }
         }
+      } catch (error) {
+        console.error("Token decoding error:", error);
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
       }
     }
-
-    // setLoading(false);
     return req;
   },
-  (error) => {
-    // setLoading(false);
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 $axios.interceptors.response.use(
@@ -145,7 +148,7 @@ $axios.interceptors.response.use(
     console.log("ind", error);
     Store.addNotification({
       title: "Error",
-      message: error.response.data.detail || "Request failed",
+      message: error.response?.data?.detail || "Request failed",
       type: "danger",
       insert: "top",
       container: "top-right",

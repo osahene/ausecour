@@ -20,18 +20,18 @@ export default function AddContacts() {
   const handleCreateContact = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const firstName = formData.get("first_name");
-    const lastName = formData.get("last_name");
-    const emailAddress = formData.get("email_address");
-    const phoneNumber = formData.get("phone_number");
+    const first_name = formData.get("first_name");
+    const last_name = formData.get("last_name");
+    const email_address = formData.get("email_address");
+    const phone_number = formData.get("phone_number");
     const relation = formData.get("relation");
 
     try {
       const res = await apiService.createRelation({
-        firstName,
-        lastName,
-        emailAddress,
-        phoneNumber,
+        first_name,
+        last_name,
+        email_address,
+        phone_number,
         relation,
       });
 
