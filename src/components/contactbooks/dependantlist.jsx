@@ -1,17 +1,63 @@
 import React, { useEffect, useState } from "react";
 import apiService from "../../api/axios";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
+import DependantAction from "./dependantActionCard";
 
 export default function Dependents() {
   const [dependants, setDependants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [approval, setApproval] = useState(false);
+  const [reject, setReject] = useState(false);
+  const [currentDependant, setCurrentDependant] = useState(null);
+
+  const handleApprovalClick = (dependant) => {
+    setCurrentDependant(dependant);
+    setApproval(true);
+  };
+
+  const handleRejectClick = (dependant) => {
+    setCurrentDependant(dependant);
+    setReject(true);
+  };
+
+  const handleApprovalConfirm = async () => {
+    try {
+      await apiService.approveDependant(currentDependant.id);
+      setDependants((prevDependants) =>
+        prevDependants.filter(
+          (dependant) => dependant.id !== currentDependant.id
+        )
+      );
+      setApproval(false);
+    } catch (error) {
+      console.log("Error approving dependant", error);
+    }
+  };
+
+  const handleRejectConfirm = async () => {
+    try {
+      await apiService.rejectDependant(currentDependant.id);
+      setDependants((prevDependants) =>
+        prevDependants.filter(
+          (dependant) => dependant.id !== currentDependant.id
+        )
+      );
+      setReject(false);
+    } catch (error) {
+      console.log("Error rejecting dependant", error);
+    }
+  };
 
   useEffect(() => {
+    const phone_number = {
+      phone_number: localStorage.getItem("userPhoneNumber"),
+    };
     const fetchContacts = async () => {
       try {
-        const response = await apiService.getMyDependants();
-        setDependants(response.data);
+        const response = await apiService.getMyDependants(phone_number);
+        setDependants(response.data.dependant_list);
         console.log("depend", response);
       } catch (error) {
         console.log("Error fetching contacts", error);
@@ -65,21 +111,26 @@ export default function Dependents() {
                   scope="row"
                   className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  <img
+                  {/* <img
                     className="w-10 h-10 rounded-full"
                     src="/docs/images/people/profile-picture-1.jpg"
                     alt="Jese"
-                  />
+                  /> */}
                   <div className="ps-3">
                     <div className="text-base font-semibold">
-                      {dependant.name}
+                      <span className="px-2">
+                        {dependant.created_by.first_name}
+                      </span>
+                      <span>{dependant.created_by.last_name}</span>
                     </div>
                     <div className="font-normal text-gray-500">
-                      {dependant.email}
+                      {dependant.created_by.email}
                     </div>
                   </div>
                 </th>
-                <td className="px-6 py-4">{dependant.phone_number}</td>
+                <td className="px-6 py-4">
+                  {dependant.created_by.phone_number}
+                </td>
                 <td className="px-6 py-4">{dependant.relation}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center">
@@ -88,22 +139,18 @@ export default function Dependents() {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-center">
-                  <span className="text-blue-400">
-                    {/* <a
-                href="#"
-                className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-              > */}
+                  <span
+                    className="text-blue-400 cursor-pointer"
+                    onClick={() => handleApprovalClick(dependant)}
+                  >
                     Approve
-                    {/* </a> */}
                   </span>
-                  <span className="mx-5 ">|</span>
-                  <span className="text-red-400">
-                    {/* <a
-                href="#"
-                className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-              > */}
-                    Remove
-                    {/* </a> */}
+                  <span className="mx-5">|</span>
+                  <span
+                    className="text-red-400 cursor-pointer"
+                    onClick={() => handleRejectClick(dependant)}
+                  >
+                    Reject
                   </span>
                 </td>
               </tr>
@@ -123,6 +170,26 @@ export default function Dependents() {
           )}
         </tbody>
       </table>
+      {approval && (
+        <div className="modal-backdrop">
+          <DependantAction
+            contact={currentDependant}
+            onAction={handleApprovalConfirm}
+            onCancel={() => setApproval(false)}
+            actionType="approve"
+          />
+        </div>
+      )}
+      {reject && (
+        <div className="modal-backdrop">
+          <DependantAction
+            contact={currentDependant}
+            onAction={handleRejectConfirm}
+            onCancel={() => setReject(false)}
+            actionType="reject"
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -27,6 +27,7 @@ export default function Register() {
         phone_number,
         password,
       });
+      console.log("reg res", res);
       if (res.status === 201) {
         localStorage.setItem("userPhoneNumber", phone_number);
         navigate("/otpRegister");

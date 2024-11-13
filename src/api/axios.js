@@ -12,6 +12,9 @@ const apiService = {
   // Create Relation
   createRelation: (data) => $axios.post("/account/create-relation/", data),
   getMyContacts: () => $axios.get("/account/my-contacts/"),
-  getMyDependants: () => $axios.get("/account/my-dependants/"),
+  getMyDependants: (data) =>
+    $axios.get("/account/my-dependants/", {
+      params: { phone_number: data.phone_number },
+    }),
 };
 export default apiService;

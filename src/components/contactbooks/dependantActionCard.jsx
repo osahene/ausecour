@@ -1,8 +1,22 @@
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-// import deleteIcon from "../../assets/img/delete.svg";
+import {
+  faCircleCheck,
+  faCircleXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function RemoveInfo({ contact, onDelete, onCancel }) {
+export default function DependantAction({
+  contact,
+  onAction,
+  onCancel,
+  actionType,
+}) {
+  const isApprove = actionType === "approve";
+  const icon = isApprove ? faCircleCheck : faCircleXmark;
+  const iconColor = isApprove ? "text-green-500" : "text-red-400";
+  const actionMessage = isApprove
+    ? `Do you want to approve ${contact.created_by.first_name} ${contact.created_by.last_name} as your dependant?`
+    : `Do you want to reject ${contact.created_by.first_name} ${contact.created_by.last_name} as your dependant?`;
+
   return (
     <div className="modal-content ">
       <div className="w-full  max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -12,21 +26,13 @@ export default function RemoveInfo({ contact, onDelete, onCancel }) {
               Heads Up !
             </h5>
           </div>
-          <FontAwesomeIcon
-            className="w-20 h-20 text-red-400"
-            icon={faTrashCan}
-          />
+          <FontAwesomeIcon className={`w-20 h-20 ${iconColor}`} icon={icon} />
           <div className="p-5">
-            <p className="text-lg dark:text-white">
-              Do you want to delete{" "}
-              <span className="font-bold">{contact.first_name}</span>{" "}
-              <span className="font-bold">{contact.last_name}</span> from your
-              emergency list?
-            </p>
+            <p className="text-lg dark:text-white">{actionMessage}</p>
           </div>
           <div className="flex justify-center mt-4">
             <button
-              onClick={onDelete}
+              onClick={onAction}
               className="bg-blue-700 text-white px-4 py-2 rounded-lg"
             >
               Yes, Proceed
