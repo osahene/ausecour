@@ -26,8 +26,10 @@ export default function Dependents() {
     try {
       await apiService.approveDependant(currentDependant.id);
       setDependants((prevDependants) =>
-        prevDependants.filter(
-          (dependant) => dependant.id !== currentDependant.id
+        prevDependants.map((dependant) =>
+          dependant.id === currentDependant.id
+            ? { ...dependant, status: "approved" }
+            : dependant
         )
       );
       setApproval(false);
@@ -40,8 +42,10 @@ export default function Dependents() {
     try {
       await apiService.rejectDependant(currentDependant.id);
       setDependants((prevDependants) =>
-        prevDependants.filter(
-          (dependant) => dependant.id !== currentDependant.id
+        prevDependants.map((dependant) =>
+          dependant.id === currentDependant.id
+            ? { ...dependant, status: "rejected" }
+            : dependant
         )
       );
       setReject(false);
@@ -58,7 +62,6 @@ export default function Dependents() {
       try {
         const response = await apiService.getMyDependants(phone_number);
         setDependants(response.data.dependant_list);
-        console.log("depend", response);
       } catch (error) {
         console.log("Error fetching contacts", error);
       } finally {

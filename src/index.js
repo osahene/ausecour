@@ -1,5 +1,6 @@
 import React from "react"; // { useState }
 import ReactDOM from "react-dom/client";
+// import Cookies from "js-cookie";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { AuthProvider } from "./AuthContext";
@@ -145,7 +146,6 @@ $axios.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log("ind", error);
     Store.addNotification({
       title: "Error",
       message: error.response?.data?.detail || "Request failed",

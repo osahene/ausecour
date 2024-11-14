@@ -13,10 +13,23 @@ export default function DependantAction({
   const isApprove = actionType === "approve";
   const icon = isApprove ? faCircleCheck : faCircleXmark;
   const iconColor = isApprove ? "text-green-500" : "text-red-400";
-  const actionMessage = isApprove
-    ? `Do you want to approve ${contact.created_by.first_name} ${contact.created_by.last_name} as your dependant?`
-    : `Do you want to reject ${contact.created_by.first_name} ${contact.created_by.last_name} as your dependant?`;
-
+  const actionMessage = isApprove ? (
+    <>
+      Do you want to approve{" "}
+      <strong>
+        {contact.created_by.first_name} {contact.created_by.last_name}
+      </strong>{" "}
+      as your dependant?
+    </>
+  ) : (
+    <>
+      Do you want to reject{" "}
+      <strong>
+        {contact.created_by.first_name} {contact.created_by.last_name}
+      </strong>{" "}
+      as your dependant?
+    </>
+  );
   return (
     <div className="modal-content ">
       <div className="w-full  max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">

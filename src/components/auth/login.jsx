@@ -21,7 +21,6 @@ export default function Login() {
 
     try {
       const res = await apiService.login({ email, password });
-      console.log("lg", res);
       if (res.status === 200) {
         localStorage.setItem("email", email);
         const { first_name, last_name } = res.data;
