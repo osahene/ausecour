@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("first_name");
     localStorage.removeItem("last_name");
     localStorage.removeItem("emailOrPhone");
+    localStorage.removeItem("email");
+    localStorage.removeItem("userPhoneNumber");
   }, []);
 
   const login = (userData) => {
@@ -33,6 +35,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("refresh_token", JSON.stringify(userData.refresh));
     localStorage.setItem("first_name", JSON.stringify(userData.first_name));
     localStorage.setItem("last_name", JSON.stringify(userData.last_name));
+    localStorage.setItem(
+      "userPhoneNumber",
+      JSON.stringify(userData.phone_number)
+    );
     // scheduleTokenCheck();
   };
 

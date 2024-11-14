@@ -17,7 +17,7 @@ const apiService = {
       params: { phone_number: data.phone_number },
     }),
   approveDependant: (data) => $axios.post("/account/approve-dependent/", data),
-  rejectDependant: (id) => $axios.put(`/account/reject-dependent/${id}`),
+  rejectDependant: (data) => $axios.post("/account/reject-dependent/", data),
 };
 
 export default apiService;

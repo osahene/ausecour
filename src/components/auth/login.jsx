@@ -22,10 +22,11 @@ export default function Login() {
     try {
       const res = await apiService.login({ email, password });
       if (res.status === 200) {
+        console.log("res", res.data);
         localStorage.setItem("email", email);
-        const { first_name, last_name } = res.data;
+        const { first_name, last_name, phone_number } = res.data;
         const { access, refresh } = res.data.tokens;
-        login({ access, refresh, first_name, last_name });
+        login({ access, refresh, first_name, last_name, phone_number });
         navigate("/");
       }
     } catch (error) {

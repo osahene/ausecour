@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import apiService from "../../api/axios";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile } from "@fortawesome/free-solid-svg-icons";
+import { faCircle, faFile } from "@fortawesome/free-solid-svg-icons";
 import DependantAction from "./dependantActionCard";
 
 export default function Dependents() {
@@ -24,15 +24,17 @@ export default function Dependents() {
 
   const handleApprovalConfirm = async () => {
     try {
-      await apiService.approveDependant(currentDependant.id);
-      setDependants((prevDependants) =>
-        prevDependants.map((dependant) =>
-          dependant.id === currentDependant.id
-            ? { ...dependant, status: "approved" }
-            : dependant
-        )
-      );
-      setApproval(false);
+      const res = await apiService.approveDependant(currentDependant.id);
+      if (res.status === 200) {
+        setDependants((prevDependants) =>
+          prevDependants.map((dependant) =>
+            dependant.id === currentDependant.id
+              ? { ...dependant, status: "approved" }
+              : dependant
+          )
+        );
+        setApproval(false);
+      }
     } catch (error) {
       console.log("Error approving dependant", error);
     }
@@ -40,35 +42,44 @@ export default function Dependents() {
 
   const handleRejectConfirm = async () => {
     try {
-      await apiService.rejectDependant(currentDependant.id);
-      setDependants((prevDependants) =>
-        prevDependants.map((dependant) =>
-          dependant.id === currentDependant.id
-            ? { ...dependant, status: "rejected" }
-            : dependant
-        )
-      );
-      setReject(false);
+      const res = await apiService.rejectDependant(currentDependant.id);
+      if (res.status === 200) {
+        setDependants((prevDependants) =>
+          prevDependants.map((dependant) =>
+            dependant.id === currentDependant.id
+              ? { ...dependant, status: "rejected" }
+              : dependant
+          )
+        );
+        setReject(false);
+      }
     } catch (error) {
       console.log("Error rejecting dependant", error);
     }
   };
 
   useEffect(() => {
-    const phone_number = {
-      phone_number: localStorage.getItem("userPhoneNumber"),
-    };
-    const fetchContacts = async () => {
-      try {
-        const response = await apiService.getMyDependants(phone_number);
-        setDependants(response.data.dependant_list);
-      } catch (error) {
-        console.log("Error fetching contacts", error);
-      } finally {
-        setLoading(false);
+    let phone_number = localStorage.getItem("userPhoneNumber");
+
+    if (phone_number) {
+      if (phone_number.startsWith('"') && phone_number.endsWith('"')) {
+        phone_number = phone_number.slice(1, -1);
       }
-    };
-    fetchContacts();
+
+      const fetchContacts = async () => {
+        try {
+          const response = await apiService.getMyDependants({
+            phone_number: phone_number,
+          });
+          setDependants(response.data.dependant_list);
+        } catch (error) {
+          console.log("Error fetching contacts", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchContacts();
+    }
   }, []);
 
   if (loading) return <p>Loading...</p>;
@@ -98,66 +109,94 @@ export default function Dependents() {
               Status
             </th>
             <th scope="col" className="px-6 py-3 text-center">
-              {/* <span className="sr-only">Action</span> */}
               Action
             </th>
           </tr>
         </thead>
         <tbody className="text-lg text-center">
           {dependants.length > 0 ? (
-            dependants.map((dependant) => (
-              <tr
-                key={dependant.id}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-              >
-                <th
-                  scope="row"
-                  className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+            dependants.map((dependant) => {
+              const statusColor =
+                dependant.status === "approved"
+                  ? "#63E6BE"
+                  : dependant.status === "rejected"
+                  ? "#fe504b"
+                  : "#ffd43b";
+              const showBeatFade = dependant.status === "pending";
+              return (
+                <tr
+                  key={dependant.id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
-                  {/* <img
-                    className="w-10 h-10 rounded-full"
-                    src="/docs/images/people/profile-picture-1.jpg"
-                    alt="Jese"
-                  /> */}
-                  <div className="ps-3">
-                    <div className="text-base font-semibold">
-                      <span className="px-2">
-                        {dependant.created_by.first_name}
+                  <th
+                    scope="row"
+                    className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    <div className="ps-3">
+                      <div className="text-base font-semibold">
+                        <span className="px-2">
+                          {dependant.created_by.first_name}
+                        </span>
+                        <span>{dependant.created_by.last_name}</span>
+                      </div>
+                      <div className="font-normal text-gray-500">
+                        {dependant.created_by.email}
+                      </div>
+                    </div>
+                  </th>
+                  <td className="px-6 py-4">
+                    {dependant.created_by.phone_number}
+                  </td>
+                  <td className="px-6 py-4">{dependant.relation}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      <FontAwesomeIcon
+                        className="h-2.5 w-2.5 me-2"
+                        icon={faCircle}
+                        beatFade={showBeatFade}
+                        style={{ color: statusColor }}
+                      />{" "}
+                      {dependant.status}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {dependant.status === "pending" && (
+                      <>
+                        <span
+                          className="text-blue-400 cursor-pointer"
+                          onClick={() => handleApprovalClick(dependant)}
+                        >
+                          Approve
+                        </span>
+                        <span className="mx-5">|</span>
+                        <span
+                          className="text-red-400 cursor-pointer"
+                          onClick={() => handleRejectClick(dependant)}
+                        >
+                          Reject
+                        </span>
+                      </>
+                    )}
+                    {dependant.status === "approved" && (
+                      <span
+                        className="text-red-400 cursor-pointer"
+                        onClick={() => handleRejectClick(dependant)}
+                      >
+                        Reject
                       </span>
-                      <span>{dependant.created_by.last_name}</span>
-                    </div>
-                    <div className="font-normal text-gray-500">
-                      {dependant.created_by.email}
-                    </div>
-                  </div>
-                </th>
-                <td className="px-6 py-4">
-                  {dependant.created_by.phone_number}
-                </td>
-                <td className="px-6 py-4">{dependant.relation}</td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center">
-                    <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{" "}
-                    {dependant.status}
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span
-                    className="text-blue-400 cursor-pointer"
-                    onClick={() => handleApprovalClick(dependant)}
-                  >
-                    Approve
-                  </span>
-                  <span className="mx-5">|</span>
-                  <span
-                    className="text-red-400 cursor-pointer"
-                    onClick={() => handleRejectClick(dependant)}
-                  >
-                    Reject
-                  </span>
-                </td>
-              </tr>
-            ))
+                    )}
+                    {dependant.status === "rejected" && (
+                      <span
+                        className="text-blue-400 cursor-pointer"
+                        onClick={() => handleApprovalClick(dependant)}
+                      >
+                        Approve
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
               <td colSpan="5" className="px-6 py-4 bg-gray-300 text-center">
