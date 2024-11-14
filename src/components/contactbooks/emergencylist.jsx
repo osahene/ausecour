@@ -3,7 +3,7 @@ import apiService from "../../api/axios";
 import EditContact from "../contactbooks/editInfo";
 import RemoveInfo from "../contactbooks/removeInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile } from "@fortawesome/free-solid-svg-icons";
+import { faFile, faCircle } from "@fortawesome/free-solid-svg-icons";
 
 export default function Emergency() {
   const [contacts, setContacts] = useState([]);
@@ -97,50 +97,95 @@ export default function Emergency() {
         </thead>
         <tbody className="text-center text-lg">
           {contacts.length > 0 ? (
-            contacts.map((contact) => (
-              <tr
-                key={contact.id}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-              >
-                <th
-                  scope="row"
-                  className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+            contacts.map((contact) => {
+              const statusColor =
+                contact.status === "approved"
+                  ? "#63E6BE"
+                  : contact.status === "rejected"
+                  ? "#fe504b"
+                  : "#ffd43b";
+              const showBeatFade = contact.status === "pending";
+              return (
+                <tr
+                  key={contact.id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
-                  <div className="ps-3">
-                    <div className="text-base font-semibold">
-                      <span className="px-3">{contact.first_name}</span>
-                      <span>{contact.last_name}</span>
-                    </div>
-                    <div className="font-normal text-gray-500">
-                      {contact.email_address}
-                    </div>
-                  </div>
-                </th>
-                <td className="px-6 py-4">{contact.phone_number}</td>
-                <td className="px-6 py-4">{contact.relation}</td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center">
-                    <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{" "}
-                    {contact.status}
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span
-                    className="text-blue-400 cursor-pointer"
-                    onClick={() => handleEditClick(contact)}
+                  <th
+                    scope="row"
+                    className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    Edit
-                  </span>
-                  <span className="mx-5 ">|</span>
-                  <span
-                    className="text-red-400 cursor-pointer"
-                    onClick={() => handleDeleteClick(contact)}
-                  >
-                    Remove
-                  </span>
-                </td>
-              </tr>
-            ))
+                    <div className="ps-3">
+                      <div className="text-base font-semibold">
+                        <span className="px-3">{contact.first_name}</span>
+                        <span>{contact.last_name}</span>
+                      </div>
+                      <div className="font-normal text-gray-500">
+                        {contact.email_address}
+                      </div>
+                    </div>
+                  </th>
+                  <td className="px-6 py-4">{contact.phone_number}</td>
+                  <td className="px-6 py-4">{contact.relation}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      <FontAwesomeIcon
+                        className="h-2.5 w-2.5 me-2"
+                        icon={faCircle}
+                        beatFade={showBeatFade}
+                        style={{ color: statusColor }}
+                      />{" "}
+                      {contact.status}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {contact.status === "pending" && (
+                      <>
+                        <span
+                          className="text-blue-400 cursor-pointer"
+                          onClick={() => handleEditClick(contact)}
+                        >
+                          Edit
+                        </span>
+                        <span className="mx-5 ">|</span>
+                        <span
+                          className="text-red-400 cursor-pointer"
+                          onClick={() => handleDeleteClick(contact)}
+                        >
+                          Remove
+                        </span>
+                      </>
+                    )}
+                    {contact.status === "approved" && (
+                      <>
+                        <span
+                          className="text-blue-400 cursor-pointer"
+                          onClick={() => handleEditClick(contact)}
+                        >
+                          Edit
+                        </span>
+                        <span className="mx-5 ">|</span>
+                        <span
+                          className="text-red-400 cursor-pointer"
+                          onClick={() => handleDeleteClick(contact)}
+                        >
+                          Remove
+                        </span>
+                      </>
+                    )}
+                    {contact.status === "rejected" && (
+                      <>
+                        <span
+                          className="text-red-400 cursor-pointer"
+                          onClick={() => handleDeleteClick(contact)}
+                        >
+                          Remove
+                        </span>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
               <td colSpan="5" className="px-6 py-4 bg-gray-300 text-center">
