@@ -37,6 +37,7 @@ export default function AddContacts() {
 
       if (res.status === 201) {
         showNotification("success", res.data);
+        event.target.reset();
       }
     } catch (error) {
       const errorMsg =

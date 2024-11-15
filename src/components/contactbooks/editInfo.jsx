@@ -80,6 +80,22 @@ export default function EditContact({ contact, onSave, onCancel }) {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
             />
           </div>
+          <div>
+            <label
+              htmlFor="relation"
+              className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+            >
+              Relation
+            </label>
+            <input
+              type="text"
+              name="relation"
+              value={formData.relation || ""}
+              onChange={handleChange}
+              placeholder="father"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+            />
+          </div>
           <div className="flex flex-row">
             <button
               type="submit"

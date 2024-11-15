@@ -31,15 +31,14 @@ export default function Emergency() {
     setIsEditing(true);
   };
 
-  const handleEditSubmit = async () => {
+  const handleEditSubmit = async (updatedContact) => {
     try {
-      const response = await apiService.updateContact(
-        currentContact.id,
-        currentContact
-      );
+      console.log("curr cont", currentContact);
+      console.log("curr pk", currentContact.pk);
+      const response = await apiService.updateContact(updatedContact);
       setContacts((prevContacts) =>
         prevContacts.map((contact) =>
-          contact.id === currentContact.id ? response.data : contact
+          contact.pk === currentContact.pk ? response.data : contact
         )
       );
       setIsEditing(false);
@@ -54,9 +53,10 @@ export default function Emergency() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await apiService.deleteContact(currentContact.id);
+      console.log("curr", currentContact);
+      await apiService.deleteContact(currentContact);
       setContacts((prevContacts) =>
-        prevContacts.filter((contact) => contact.id !== currentContact.id)
+        prevContacts.filter((contact) => contact.pk !== currentContact.pk)
       );
       setIsDeleting(false);
     } catch (error) {
@@ -107,7 +107,7 @@ export default function Emergency() {
               const showBeatFade = contact.status === "pending";
               return (
                 <tr
-                  key={contact.id}
+                  key={contact.pk}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
                   <th

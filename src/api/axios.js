@@ -18,6 +18,9 @@ const apiService = {
     }),
   approveDependant: (data) => $axios.post("/account/approve-dependent/", data),
   rejectDependant: (data) => $axios.post("/account/reject-dependent/", data),
+  deleteContact: (data) =>
+    $axios.post("/account/delete-contact/", data, console.log("del", data)),
+  updateContact: (data) => $axios.post("/account/update-contact/", data),
 };
 
 export default apiService;
