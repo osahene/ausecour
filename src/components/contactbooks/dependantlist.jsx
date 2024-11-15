@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import apiService from "../../api/axios";
-
+import ActionButton from "../calltoaction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faFile } from "@fortawesome/free-solid-svg-icons";
 import DependantAction from "./dependantActionCard";
@@ -11,6 +11,8 @@ export default function Dependents() {
   const [approval, setApproval] = useState(false);
   const [reject, setReject] = useState(false);
   const [currentDependant, setCurrentDependant] = useState(null);
+
+  const pendingCount = dependants.filter((d) => d.status === "pending").length;
 
   const handleApprovalClick = (dependant) => {
     setCurrentDependant(dependant);
@@ -232,6 +234,9 @@ export default function Dependents() {
           />
         </div>
       )}
+      <div className="hidden">
+        <ActionButton pendingCount={pendingCount} />
+      </div>
     </div>
   );
 }

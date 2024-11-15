@@ -7,11 +7,12 @@ import {
   // faBell,
   // faGasPump,
   // faGear,
+  faExclamationCircle,
   faUserCog,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-const ActionButton = () => {
+const ActionButton = ({ pendingCount }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const actionButtonRef = useRef(null);
 
@@ -51,6 +52,11 @@ const ActionButton = () => {
           }`}
           icon={faAdd}
         />
+        {pendingCount > 0 && (
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
+            <FontAwesomeIcon icon={faExclamationCircle} />
+          </div>
+        )}
       </div>
 
       {/* Menu items */}
@@ -64,6 +70,11 @@ const ActionButton = () => {
           <div className="rounded-full p-2 bg-green-300 hover:bg-green-400 text-white">
             <FontAwesomeIcon className="w-8 h-8" icon={faContactBook} />
           </div>
+          {pendingCount > 0 && (
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
+              {pendingCount}
+            </div>
+          )}
         </Link>
         <Link to={`settings`}>
           <div className="rounded-full p-2 bg-blue-300 hover:bg-blue-400 text-white">
