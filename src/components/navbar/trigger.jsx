@@ -1,4 +1,4 @@
-import axios from "axios";
+import apiService from "../../api/axios";
 import { useState } from "react";
 import { CSSTransition } from "react-transition-group";
 import "../../index.css"; // for fade-in/out effect
@@ -14,11 +14,46 @@ export default function TriggerCard({
   onClose,
 }) {
   const [showModal, setShowModal] = useState(true);
+  const getGeolocation = () => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject("Geolocation is not supported by your browser");
+      } else {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            resolve({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+          },
+          (error) => {
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                reject("User denied the request for Geolocation.");
+                break;
+              case error.POSITION_UNAVAILABLE:
+                reject("Location information is unavailable.");
+                break;
+              case error.TIMEOUT:
+                reject("The request to get user location timed out.");
+                break;
+              default:
+                reject("An unknown error occurred while retrieving location.");
+            }
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+        );
+      }
+    });
+  };
 
   const handleTriggerAlert = async () => {
     try {
-      await axios.post("/api/trigger-alert", {
-        alertType: `${cardName} ${cardName2}`,
+      const geolocation = await getGeolocation();
+
+      await apiService.triggerAlert({
+        alertType: `${cardName}`,
+        location: geolocation,
       });
       alert("Alert triggered successfully");
     } catch (error) {
@@ -37,7 +72,7 @@ export default function TriggerCard({
     <CSSTransition in={showModal} timeout={300} classNames="fade" unmountOnExit>
       {isAuthenticated ? (
         <>
-          <div className=" modal-backdrop fixed inset-0 z-50 flex justify-center items-center">
+          <div className="modal-backdrop fixed inset-0 z-50 flex justify-center items-center">
             <div className="relative bg-white p-4 w-full max-w-sm max-h-full rounded-lg shadow">
               <button
                 type="button"

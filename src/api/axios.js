@@ -21,6 +21,8 @@ const apiService = {
   deleteContact: (data) =>
     $axios.post("/account/delete-contact/", data, console.log("del", data)),
   updateContact: (data) => $axios.post("/account/update-contact/", data),
+  // trigger Alert
+  triggerAlert: (data) => $axios.post("/account/trigger-alert/", data),
 };
 
 export default apiService;
