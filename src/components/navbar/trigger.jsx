@@ -1,10 +1,11 @@
 import apiService from "../../api/axios";
 import { useState } from "react";
 import { CSSTransition } from "react-transition-group";
-import "../../index.css"; // for fade-in/out effect
+import "../../index.css";
 import { useAuth } from "../../AuthContext";
 import userImg from "../../assets/img/user.svg";
 import { Link } from "react-router-dom";
+import { Store } from "react-notifications-component";
 
 export default function TriggerCard({
   cardName,
@@ -51,13 +52,78 @@ export default function TriggerCard({
     try {
       const geolocation = await getGeolocation();
 
-      await apiService.triggerAlert({
+      const res = await apiService.triggerAlert({
         alertType: `${cardName}`,
         location: geolocation,
       });
-      alert("Alert triggered successfully");
+      if (res.status === 201) {
+        setShowModal(false);
+        setTimeout(onClose, 300);
+      }
     } catch (error) {
-      console.error("Error triggering alert", error);
+      if (error === "User denied the request for Geolocation.") {
+        Store.addNotification({
+          title: "Location Required",
+          message: "Turn on location to complete the action.",
+          type: "warning",
+          insert: "top",
+          container: "top-right",
+          dismiss: {
+            duration: 5000,
+            onScreen: true,
+          },
+        });
+      } else if (error === "Location information is unavailable.") {
+        Store.addNotification({
+          title: "PERMISSION DENIED",
+          message: "Location information is unavailable.",
+          type: "danger",
+          insert: "top",
+          container: "top-right",
+          dismiss: {
+            duration: 5000,
+            onScreen: true,
+          },
+        });
+      } else if (error === "Location information is unavailable.") {
+        Store.addNotification({
+          title: "POSITION UNAVAILABLE",
+          message: "Location information is unavailable.",
+          type: "danger",
+          insert: "top",
+          container: "top-right",
+          dismiss: {
+            duration: 5000,
+            onScreen: true,
+          },
+        });
+      } else if (error === "The request to get user location timed out.") {
+        Store.addNotification({
+          title: "TIMEOUT",
+          message: "The request to get user location timed out.",
+          type: "danger",
+          insert: "top",
+          container: "top-right",
+          dismiss: {
+            duration: 5000,
+            onScreen: true,
+          },
+        });
+      } else {
+        Store.addNotification({
+          title: "LOCATION PROBLEMS",
+          message: "Check your device location.",
+          type: "danger",
+          insert: "top",
+          container: "top-right",
+          dismiss: {
+            duration: 5000,
+            onScreen: true,
+          },
+        });
+      }
+      setShowModal(false);
+      setTimeout(onClose, 300);
     }
   };
 
