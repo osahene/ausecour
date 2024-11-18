@@ -30,7 +30,7 @@ export default function Login() {
         navigate("/");
       }
     } catch (error) {
-      console.log("log", error.response.data);
+      console.log("log", error.message);
     } finally {
       setLoading(false);
     }

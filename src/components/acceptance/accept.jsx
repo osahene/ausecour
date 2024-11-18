@@ -1,43 +1,54 @@
 import { faThumbsDown, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useMutation, gql } from "@apollo/client";
-
-const UPDATE_CONTACT_STATUS = gql`
-  mutation UpdateContactStatus($contactId: ID!, $status: String!) {
-    updateContactStatus(contactId: $contactId, status: $status) {
-      success
-      message
-    }
-  }
-`;
+import { useNavigate, useParams } from "react-router-dom";
+import apiService from "../../api/axios";
+import React, { useEffect, useState } from "react";
 
 export default function Accept() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const contactId = queryParams.get("contactId"); // Assuming contactId is in the link
-  const senderName = queryParams.get("sender");
-  const recipientName = queryParams.get("recipient");
-
-  const [updateContactStatus] = useMutation(UPDATE_CONTACT_STATUS);
+  const [contactData, setContactData] = useState(null);
   const navigate = useNavigate();
+  const { contactId } = useParams();
+
+  useEffect(() => {
+    const fetchContactData = async () => {
+      try {
+        const res = await apiService.contactInfo(contactId);
+        if (res.status === 200) {
+          setContactData(res.data);
+        }
+      } catch (error) {
+        alert("Failed to fetch contact information.");
+      }
+    };
+    fetchContactData();
+  }, [contactId]);
 
   const handleStatusChange = async (status) => {
     try {
-      const { data } = await updateContactStatus({
-        variables: { contactId, status },
+      const res = await apiService.inviteStatus({
+        contact_id: contactId,
+        action: status,
       });
-
-      if (data.updateContactStatus.success) {
-        alert("Contact status updated.");
-        navigate("/invite"); // Redirect to a success page or other route
-      } else {
-        alert(data.updateContactStatus.message);
+      if (res.status === 200) {
+        navigate("/accept/invite", { state: { contactData } });
       }
     } catch (error) {
-      console.error("Error updating contact status:", error);
+      if (error.response) {
+        // Server responded with a status code outside the range of 2xx
+        alert(`Error: ${error.response.data.error || "An error occurred."}`);
+      } else if (error.request) {
+        // Request was made but no response received
+        alert("Network error: Please check your internet connection.");
+      } else {
+        // Something else caused an error
+        alert(`Unexpected error: ${error.message}`);
+      }
     }
   };
+
+  if (!contactData) return <p>Loading...</p>;
+
+  const { contact_first_name, contact_last_name, sender_name } = contactData;
 
   return (
     <>
@@ -47,9 +58,11 @@ export default function Accept() {
         </div>
         <div className="border border-gray-200 w-auto shadow shadow-lg rounded rounded-xl">
           <div className="p-4 bg-black rounded rounded-xl">
-            <h3 className="text-center">Hello, {recipientName}</h3>
+            <h3 className="text-center">
+              Hello, {contact_first_name} {contact_last_name}
+            </h3>
             <h4 className="">
-              We are glad to inform you that <span>{senderName}</span> has
+              We are glad to inform you that <span>{sender_name}</span> has
               nominated you, <br /> that in case of emergency, you should be
               contacted.
             </h4>

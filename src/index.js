@@ -27,7 +27,7 @@ const router = createBrowserRouter([
   { path: "/", element: <App />, errorElement: <ErrorPage /> },
   { path: "/contact", element: <ContactBook /> },
   { path: "/settings", element: <Usersettings /> },
-  { path: "/accept", element: <Accept /> },
+  { path: "/accept/:contactId", element: <Accept /> },
   { path: "/accept/invite", element: <Invitation /> },
   { path: "/register", element: <Register /> },
   { path: "/otp", element: <OTPpage /> },
@@ -148,7 +148,8 @@ $axios.interceptors.response.use(
   (error) => {
     Store.addNotification({
       title: "Error",
-      message: error.response?.data?.detail || "Request failed",
+      message:
+        error.response?.data?.detail || error.message || "Request failed",
       type: "danger",
       insert: "top",
       container: "top-right",

@@ -9,6 +9,9 @@ const apiService = {
   otpRegister: (data) => $axios.post("/account/user-register-otp/", data),
   otpRegisterValidate: (data) => $axios.post("/account/user-login-otp/", data),
   otpLogin: (data) => $axios.post("/account/user-login-otp/", data),
+  // accept / reject
+  contactInfo: (contactId) => $axios.get(`/account/contacts/${contactId}/`),
+  inviteStatus: (data) => $axios.post("/account/update-status/", data),
   // Create Relation
   createRelation: (data) => $axios.post("/account/create-relation/", data),
   getMyContacts: () => $axios.get("/account/my-contacts/"),

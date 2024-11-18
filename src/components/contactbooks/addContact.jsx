@@ -1,22 +1,7 @@
 import React from "react";
 import apiService from "../../api/axios";
-import { Store } from "react-notifications-component";
 
 export default function AddContacts() {
-  const showNotification = (type, message) => {
-    Store.addNotification({
-      title: type === "success" ? "Success" : "Error",
-      message,
-      type,
-      insert: "top",
-      container: "top-right",
-      dismiss: {
-        duration: 5000,
-        onScreen: true,
-      },
-    });
-  };
-
   const handleCreateContact = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -36,13 +21,12 @@ export default function AddContacts() {
       });
 
       if (res.status === 201) {
-        showNotification("success", res.data);
         event.target.reset();
       }
     } catch (error) {
       const errorMsg =
         error.response?.data?.message || "An error occurred. Please try again.";
-      showNotification("error", errorMsg);
+      console.log(errorMsg);
     }
   };
 
