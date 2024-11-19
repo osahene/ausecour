@@ -16,12 +16,13 @@ import ErrorPage from "./components/errorpage";
 import Register from "./components/auth/register";
 import OTPpage from "./components/auth/otp";
 import OTPRegisterPage from "./components/auth/otpRegister";
+import Subscriptions from "./components/subscription/subscription";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import dayjs from "dayjs";
 import { ReactNotifications, Store } from "react-notifications-component";
 import "react-notifications-component/dist/theme.css";
-import ClipLoader from "react-spinners/ClipLoader";
+import HashLoader from "react-spinners/HashLoader";
 import {
   LoadingProvider,
   useLoading,
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
   { path: "/otp", element: <OTPpage /> },
   { path: "/otpRegister", element: <OTPRegisterPage /> },
   { path: "/login", element: <Login /> },
+  { path: "/subscribe", element: <Subscriptions /> },
 ]);
 
 // Axios instance
@@ -67,7 +69,7 @@ const AppWithLoading = () => {
             zIndex: 1000,
           }}
         >
-          <ClipLoader color="blue" size={150} />
+          <HashLoader color="rgba(132, 113, 209, 1)" size={70} />
         </div>
       )}
       <RouterProvider router={router} />

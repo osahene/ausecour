@@ -90,10 +90,12 @@ export default function HeaderBar() {
                     </div>
                     <ul className="py-2" aria-labelledby="user-menu-button">
                       <li>
-                        <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
-                          Subscription plan{" "}
-                          <span className="text-blue-300">FREE</span>
-                        </button>
+                        <Link to="/subscribe">
+                          <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                            Subscription plan{" "}
+                            <span className="text-blue-300">FREE</span>
+                          </button>
+                        </Link>
                       </li>
                     </ul>
                     <ul className="py-2" aria-labelledby="user-menu-button">
