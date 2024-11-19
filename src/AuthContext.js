@@ -13,18 +13,12 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const logout = useCallback(() => {
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem("user");
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("first_name");
-    localStorage.removeItem("last_name");
-    localStorage.removeItem("emailOrPhone");
-    localStorage.removeItem("email");
-    localStorage.removeItem("userPhoneNumber");
+    localStorage.clear();
   }, []);
 
   const login = (userData) => {
@@ -46,14 +40,17 @@ export const AuthProvider = ({ children }) => {
     const loggedInUser = localStorage.getItem("user");
     const accessToken = localStorage.getItem("access_token");
     if (loggedInUser && accessToken) {
-      setIsAuthenticated(true);
       setUser(JSON.parse(loggedInUser));
+      setIsAuthenticated(true);
       // scheduleTokenCheck(); // Start the token check on initial load if user is logged in
     }
+    setLoading(false);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, login, logout, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
