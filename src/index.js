@@ -22,6 +22,11 @@ import dayjs from "dayjs";
 import { ReactNotifications, Store } from "react-notifications-component";
 import "react-notifications-component/dist/theme.css";
 import ClipLoader from "react-spinners/ClipLoader";
+import {
+  LoadingProvider,
+  useLoading,
+  setGlobalLoading,
+} from "./LoadingContext";
 
 const router = createBrowserRouter([
   { path: "/", element: <App />, errorElement: <ErrorPage /> },
@@ -42,15 +47,33 @@ const $axios = axios.create({
   headers: { "Content-type": "application/json" },
 });
 
-// React spinner and notification setup
-const LoadingSpinner = ({ loading }) => (
-  <ClipLoader
-    color="blue"
-    loading={loading}
-    cssOverride={{ display: "block", margin: "0 auto" }}
-    size={150}
-  />
-);
+const AppWithLoading = () => {
+  const { loading } = useLoading();
+
+  return (
+    <>
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            background: "rgba(255, 255, 255, 0.5)",
+            minHeight: "122vh",
+            zIndex: 1000,
+          }}
+        >
+          <ClipLoader color="blue" size={150} />
+        </div>
+      )}
+      <RouterProvider router={router} />
+    </>
+  );
+};
 
 const TakeRefreshToken = async () => {
   const refresh_token = localStorage.getItem("refresh_token");
@@ -94,8 +117,8 @@ const TakeRefreshToken = async () => {
 // Axios interceptors for requests and responses
 $axios.interceptors.request.use(
   async (req) => {
+    setGlobalLoading(true);
     let accessToken = localStorage.getItem("access_token");
-
     if (accessToken) {
       if (accessToken.startsWith('"') && accessToken.endsWith('"')) {
         accessToken = accessToken.slice(1, -1);
@@ -127,14 +150,18 @@ $axios.interceptors.request.use(
     }
     return req;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    setGlobalLoading(false);
+    Promise.reject(error);
+  }
 );
 
 $axios.interceptors.response.use(
   (response) => {
+    setGlobalLoading(false);
     Store.addNotification({
       title: "Success",
-      message: "Request completed successfully",
+      message: response.data.message || "Request completed successfully",
       type: "success",
       insert: "top",
       container: "top-right",
@@ -146,6 +173,7 @@ $axios.interceptors.response.use(
     return response;
   },
   (error) => {
+    setGlobalLoading(false);
     Store.addNotification({
       title: "Error",
       message:
@@ -167,10 +195,12 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <ReactNotifications />
-      <RouterProvider router={router} />
+      <LoadingProvider>
+        <ReactNotifications />
+        {/* <RouterProvider router={router} /> */}
+        <AppWithLoading />
+      </LoadingProvider>
     </AuthProvider>
-    <LoadingSpinner loading={false} />
   </React.StrictMode>
 );
 

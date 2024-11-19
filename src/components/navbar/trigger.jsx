@@ -112,7 +112,7 @@ export default function TriggerCard({
       } else {
         Store.addNotification({
           title: "LOCATION PROBLEMS",
-          message: "Check your device location.",
+          message: error.message,
           type: "danger",
           insert: "top",
           container: "top-right",
