@@ -21,8 +21,7 @@ const apiService = {
     }),
   approveDependant: (data) => $axios.post("/account/approve-dependent/", data),
   rejectDependant: (data) => $axios.post("/account/reject-dependent/", data),
-  deleteContact: (data) =>
-    $axios.post("/account/delete-contact/", data, console.log("del", data)),
+  deleteContact: (data) => $axios.post("/account/delete-contact/", data),
   updateContact: (data) => $axios.post("/account/update-contact/", data),
   // trigger Alert
   triggerAlert: (data) => $axios.post("/account/trigger-alert/", data),

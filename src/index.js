@@ -79,7 +79,6 @@ const AppWithLoading = () => {
 
 const TakeRefreshToken = async () => {
   let refresh_token = localStorage.getItem("refresh_token");
-  console.log("ref tok", refresh_token);
   if (!refresh_token) return null;
 
   try {

@@ -33,8 +33,6 @@ export default function Emergency() {
 
   const handleEditSubmit = async (updatedContact) => {
     try {
-      console.log("curr cont", currentContact);
-      console.log("curr pk", currentContact.pk);
       const response = await apiService.updateContact(updatedContact);
       setContacts((prevContacts) =>
         prevContacts.map((contact) =>
@@ -53,7 +51,6 @@ export default function Emergency() {
 
   const handleDeleteConfirm = async () => {
     try {
-      console.log("curr", currentContact);
       await apiService.deleteContact(currentContact);
       setContacts((prevContacts) =>
         prevContacts.filter((contact) => contact.pk !== currentContact.pk)
