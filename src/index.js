@@ -1,6 +1,5 @@
 import React from "react"; // { useState }
 import ReactDOM from "react-dom/client";
-// import Cookies from "js-cookie";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { AuthProvider } from "./AuthContext";
@@ -28,6 +27,7 @@ import {
   useLoading,
   setGlobalLoading,
 } from "./LoadingContext";
+import { sendToVercelAnalytics } from "./vitals";
 
 const router = createBrowserRouter([
   { path: "/", element: <App />, errorElement: <ErrorPage /> },
@@ -220,4 +220,4 @@ serviceWorkerRegistration.unregister();
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+reportWebVitals(sendToVercelAnalytics);
