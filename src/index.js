@@ -79,11 +79,12 @@ const AppWithLoading = () => {
 
 const TakeRefreshToken = async () => {
   const refresh_token = localStorage.getItem("refresh_token");
+  console.log("ref tok", refresh_token);
   if (!refresh_token) return null;
 
   try {
     const response = await axios.post(
-      `${$axios.defaults.baseURL}account/token/refresh/`,
+      `${$axios.defaults.baseURL}/account/token/refresh/`,
       {
         refresh: refresh_token,
       }
@@ -199,7 +200,6 @@ root.render(
     <AuthProvider>
       <LoadingProvider>
         <ReactNotifications />
-        {/* <RouterProvider router={router} /> */}
         <AppWithLoading />
       </LoadingProvider>
     </AuthProvider>
