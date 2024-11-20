@@ -78,26 +78,33 @@ const AppWithLoading = () => {
 };
 
 const TakeRefreshToken = async () => {
-  const refresh_token = localStorage.getItem("refresh_token");
+  let refresh_token = localStorage.getItem("refresh_token");
   console.log("ref tok", refresh_token);
   if (!refresh_token) return null;
 
   try {
-    const response = await axios.post(
-      `${$axios.defaults.baseURL}/account/token/refresh/`,
-      {
-        refresh: refresh_token,
+    if (refresh_token) {
+      if (refresh_token.startsWith('"') && refresh_token.endsWith('"')) {
+        refresh_token = refresh_token.slice(1, -1);
       }
-    );
-
-    const { access, refresh } = response.data;
-    if (access) {
-      $axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
-      localStorage.setItem("access_token", access);
-      if (refresh) {
-        localStorage.setItem("refresh_token", refresh);
+      const response = await axios.post(
+        `${$axios.defaults.baseURL}/account/token/refresh/`,
+        {
+          refresh: refresh_token,
+        }
+      );
+      const { access, refresh } = response.data;
+      if (access) {
+        $axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+        localStorage.setItem("access_token", access);
+        if (refresh) {
+          localStorage.setItem("refresh_token", refresh);
+        }
+        return {
+          access_token: access,
+          refresh_token: refresh || refresh_token,
+        };
       }
-      return { access_token: access, refresh_token: refresh || refresh_token };
     }
   } catch (error) {
     const errorMessage =

@@ -5,8 +5,10 @@ import {
   useEffect,
   useCallback,
 } from "react";
-// import axios from "axios";
-// import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+import dayjs from "dayjs";
+
+import TakeRefreshToken from "./index";
 
 const AuthContext = createContext();
 
@@ -39,11 +41,33 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     const accessToken = localStorage.getItem("access_token");
+
     if (loggedInUser && accessToken) {
       setUser(JSON.parse(loggedInUser));
       setIsAuthenticated(true);
-      // scheduleTokenCheck(); // Start the token check on initial load if user is logged in
     }
+
+    // Proactively refresh tokens before expiry
+    const scheduleTokenRefresh = async () => {
+      try {
+        const user = jwtDecode(accessToken);
+        const timeUntilExpiry = dayjs.unix(user.exp).diff(dayjs());
+
+        if (timeUntilExpiry > 0) {
+          setTimeout(async () => {
+            await TakeRefreshToken();
+            scheduleTokenRefresh();
+          }, timeUntilExpiry - 60000);
+        }
+      } catch (error) {
+        console.error("Error decoding token or refreshing:", error);
+      }
+    };
+
+    if (accessToken) {
+      scheduleTokenRefresh();
+    }
+
     setLoading(false);
   }, []);
 
