@@ -12,19 +12,32 @@
     animation: App-logo-spin infinite 20s linear;
   }
 } */
+html,
+body,
+#root,
+.app-container {
+  margin: 0;
+  padding: 0;
+  height: 100%; /* Ensure full height is occupied */
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
 .App-header {
   background: linear-gradient(to top left, #0a1fe0, #7dd56f);
-  min-height: 100vh;
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  /* color: white; */
   width: 100%;
 }
+
 .App-header-1 {
   background: linear-gradient(to top left, #0a1fe0, #7dd56f);
   min-height: 100vh;
