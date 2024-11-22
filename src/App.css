@@ -24,10 +24,10 @@ body,
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
 .App-header {
+  min-height: 100vh;
   background: linear-gradient(to top left, #0a1fe0, #7dd56f);
   display: flex;
   flex: 1;
