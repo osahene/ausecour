@@ -37,7 +37,7 @@ export default function HeaderBar() {
     <>
       <div>
         {/* Sticky navbar */}
-        <nav className="sticky top-0 z-50 bg-white border-gray-200 dark:bg-gray-900">
+        <nav className="sticky z-50 bg-white border-gray-200 dark:bg-gray-900">
           <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
             <a
               href="https://flowbite.com/"

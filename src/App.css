@@ -19,14 +19,20 @@ body,
   margin: 0;
   padding: 0;
 }
+nav.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 50; /* Ensure it stays on top of other elements */
+}
 
 .app-container {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .App-header {
-  height: 100%;
+  position: relative;
   min-height: 100vh;
   background: linear-gradient(to top left, #0a1fe0, #7dd56f);
   display: flex;
