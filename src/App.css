@@ -22,7 +22,8 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  /* color: white; */
+  width: 100%;
 }
 .App-header-1 {
   background: linear-gradient(to top left, #0a1fe0, #7dd56f);
