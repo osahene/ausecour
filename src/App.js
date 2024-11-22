@@ -12,7 +12,7 @@ function App() {
     <div className="app-container">
       <HeaderBar />
       <div className="App">
-        <header className="App-header sm:h-screen sm:h-full">
+        <header className="App-header absolute">
           <MainPage />
           {isAuthenticated && <ActionButton />}
         </header>
