@@ -9,14 +9,12 @@ import { useAuth } from "./AuthContext";
 function App() {
   const { isAuthenticated } = useAuth();
   return (
-    <div>
-      <div>
-        <HeaderBar />
-      </div>
+    <div className="app-container">
+      <HeaderBar />
       <div className="App">
         <header className="App-header">
           <MainPage />
-          {isAuthenticated ? <ActionButton /> : ""}
+          {isAuthenticated && <ActionButton />}
         </header>
       </div>
     </div>
