@@ -29,18 +29,30 @@ import {
 } from "./LoadingContext";
 import { sendToVercelAnalytics } from "./vitals";
 
-const router = createBrowserRouter([
-  { path: "/", element: <App />, errorElement: <ErrorPage /> },
-  { path: "/contact", element: <ContactBook /> },
-  { path: "/settings", element: <Usersettings /> },
-  { path: "/accept/:contactId", element: <Accept /> },
-  { path: "/accept/invite", element: <Invitation /> },
-  { path: "/register", element: <Register /> },
-  { path: "/otp", element: <OTPpage /> },
-  { path: "/otpRegister", element: <OTPRegisterPage /> },
-  { path: "/login", element: <Login /> },
-  { path: "/subscribe", element: <Subscriptions /> },
-]);
+const router = createBrowserRouter(
+  [
+    { path: "/", element: <App />, errorElement: <ErrorPage /> },
+    { path: "/contact", element: <ContactBook /> },
+    { path: "/settings", element: <Usersettings /> },
+    { path: "/accept/:contactId", element: <Accept /> },
+    { path: "/accept/invite", element: <Invitation /> },
+    { path: "/register", element: <Register /> },
+    { path: "/otp", element: <OTPpage /> },
+    { path: "/otpRegister", element: <OTPRegisterPage /> },
+    { path: "/login", element: <Login /> },
+    { path: "/subscribe", element: <Subscriptions /> },
+  ],
+  {
+    future: {
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+      v7_fetcherPersist: true,
+      v7_normalizeFormMethod: true,
+      v7_partialHydration: true,
+      v7_skipActionErrorRevalidation: true,
+    },
+  }
+);
 
 // Axios instance
 const $axios = axios.create({
