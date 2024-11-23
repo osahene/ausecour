@@ -16,7 +16,6 @@ export default function Register() {
     const first_name = formData.get("first_name");
     const last_name = formData.get("last_name");
     const email = formData.get("email_address");
-    const phone_number = formData.get("phone_number");
     const password = formData.get("password");
 
     try {
@@ -24,12 +23,11 @@ export default function Register() {
         first_name,
         last_name,
         email,
-        phone_number,
         password,
       });
       if (res.status === 201) {
-        localStorage.setItem("userPhoneNumber", phone_number);
-        navigate("/otpRegister");
+        localStorage.setItem("email", email);
+        navigate("/verifyEmail");
       }
     } catch (error) {
       console.error("Error during registration", error);
@@ -69,7 +67,7 @@ export default function Register() {
                 </div>
                 <div className="flex items-center justify-center">
                   <div className="flex-grow h-px bg-indigo-600"></div>
-                  <h4 className="px-4 text-white">Or</h4>
+                  <h4 className="px-4 text-black dark:text-white">Or</h4>
                   <div className="flex-grow h-px bg-indigo-600"></div>
                 </div>
                 <form
@@ -110,7 +108,7 @@ export default function Register() {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-row">
+                  <div className="">
                     <div className="pr-5">
                       <label
                         htmlFor="email_address"
@@ -124,22 +122,6 @@ export default function Register() {
                         id="email_address"
                         className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="name@company.com"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="phone_number"
-                        className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
-                      >
-                        Phone Number
-                      </label>
-                      <input
-                        type="text"
-                        name="phone_number"
-                        id="phone_number"
-                        placeholder="+233123456789"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required
                       />
                     </div>

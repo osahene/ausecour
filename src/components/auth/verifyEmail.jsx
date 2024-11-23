@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import apiService from "../../api/axios";
 
-export default function OTPPage() {
+export default function VerifyEmail() {
+  const navigate = useNavigate();
   const { login } = useAuth();
   const [otp, setOtp] = useState("");
-  const [isOtpValid, setIsOtpValid] = useState(false);
   const [timer, setTimer] = useState({ minutes: 0, seconds: 5 });
 
   useEffect(() => {
@@ -28,32 +28,30 @@ export default function OTPPage() {
   }, [timer]);
 
   const resendOTP = async () => {
-    const phoneNumber = localStorage.getItem("emailOrPhone");
+    const email_address = localStorage.getItem("email");
     setTimer({ minutes: 0, seconds: 30 }); // Reset timer
 
     try {
-      await apiService.generate({ emailOrPhone: phoneNumber });
+      await apiService.generate({ email: email_address });
     } catch (error) {}
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const phoneNumber = localStorage.getItem("emailOrPhone");
+    const email_address = localStorage.getItem("email");
 
     try {
-      const res = await apiService.otpLogin({
-        emailOrPhone: phoneNumber,
+      const res = await apiService.verifyEmail({
+        email: email_address,
         otp,
       });
       if (res.status === 200) {
-        setIsOtpValid(true);
-        const { access, refresh, firstName, lastName } = res.data;
-        login({ access, refresh, firstName, lastName });
+        const { access, refresh } = res.data;
+        login({ access, refresh });
+        navigate("/verifyPhoneNumber");
       }
     } catch (error) {}
   };
-
-  if (isOtpValid) return <Navigate to="/" />;
 
   return (
     <div className="App-header">
@@ -61,7 +59,7 @@ export default function OTPPage() {
         <div className="w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Enter your One-Time Password
+              Verify your email address
             </h1>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
@@ -94,7 +92,9 @@ export default function OTPPage() {
                     </span>
                   </p>
                 ) : (
-                  <p>Didn't receive code?</p>
+                  <p className="dark:text-white text-black">
+                    Didn't receive code?
+                  </p>
                 )}
                 <button
                   type="button"

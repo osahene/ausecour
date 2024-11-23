@@ -13,8 +13,9 @@ import Invitation from "./components/acceptance/invitation";
 import Login from "./components/auth/login";
 import ErrorPage from "./components/errorpage";
 import Register from "./components/auth/register";
-import OTPpage from "./components/auth/otp";
-import OTPRegisterPage from "./components/auth/otpRegister";
+import VerifyEmail from "./components/auth/verifyEmail";
+import VerifyPhoneNumber from "./components/auth/verifyPhoneNumber";
+import VerifyPhoneNumberOTP from "./components/auth/verifyPhoneNumberOTP";
 import Subscriptions from "./components/subscription/subscription";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
@@ -37,8 +38,9 @@ const router = createBrowserRouter(
     { path: "/accept/:contactId", element: <Accept /> },
     { path: "/accept/invite", element: <Invitation /> },
     { path: "/register", element: <Register /> },
-    { path: "/otp", element: <OTPpage /> },
-    { path: "/otpRegister", element: <OTPRegisterPage /> },
+    { path: "/verifyEmail", element: <VerifyEmail /> },
+    { path: "/verifyPhoneNumber", element: <VerifyPhoneNumber /> },
+    { path: "/verifyPhoneNumberOTP", element: <VerifyPhoneNumberOTP /> },
     { path: "/login", element: <Login /> },
     { path: "/subscribe", element: <Subscriptions /> },
   ],

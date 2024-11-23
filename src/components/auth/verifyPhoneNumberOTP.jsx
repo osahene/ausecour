@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import apiService from "../../api/axios";
 import { useAuth } from "../../AuthContext";
 
-export default function OTPRegisterPage() {
+export default function VerifyPhoneNumberOTP() {
   const { login } = useAuth();
 
   const [otp, setOtp] = useState("");
@@ -29,7 +29,7 @@ export default function OTPRegisterPage() {
   }, [timer]);
 
   const resendOTP = async () => {
-    const phoneNumber = localStorage.getItem("userPhoneNumber");
+    const phoneNumber = localStorage.getItem("phone_number");
     setTimer({ minutes: 0, seconds: 30 }); // Reset timer
 
     try {
@@ -39,10 +39,10 @@ export default function OTPRegisterPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const phoneNumber = localStorage.getItem("userPhoneNumber");
+    const phoneNumber = localStorage.getItem("phone_number");
 
     try {
-      const res = await apiService.otpRegister({
+      const res = await apiService.VerifyPhoneNumberOTP({
         phoneNumber: phoneNumber,
         otp,
       });
@@ -60,7 +60,7 @@ export default function OTPRegisterPage() {
         <div className="w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Verify your phone number with the OTP
+              Verify your phone number
             </h1>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
